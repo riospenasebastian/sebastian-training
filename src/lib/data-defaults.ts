@@ -55,6 +55,7 @@ export const DEFAULT_EXERCISES: Exercise[] = [
     common_errors: 'Inclinación muy alta (>45°), abrir los codos en 90° (peligroso para hombros), rebotar.',
     how_it_should_feel: 'Tensión concentrada debajo de la clavícula en el pecho superior, sin dolor en la parte frontal del hombro.',
     video_url: 'https://www.youtube.com/watch?v=8iPEnn-ltC8',
+    gif_url: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/0314.gif',
     scientific_note: 'Inclinación de 30° maximiza la electromiografía (EMG) del haz clavicular minimizando la activación excesiva del deltoides anterior (investigaciones de Trebs et al. y Jeff Nippard).',
     why_this_exercise: 'Es el mejor ejercicio constructor de la parte superior del pecho para crear el torso atlético y estético.',
     ranking_tier: 'S',
@@ -83,6 +84,7 @@ export const DEFAULT_EXERCISES: Exercise[] = [
     common_errors: 'Despegar el pecho del banco por usar demasiado peso, encoger hombros hacia las orejas.',
     how_it_should_feel: 'Contracción y ardor limpio en el centro y parte alta de la espalda sin tensión lumbar.',
     video_url: 'https://www.youtube.com/watch?v=H75im9fAUMc',
+    gif_url: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/0327.gif',
     scientific_note: 'Al apoyar el pecho, se elimina la fatiga de los erectores espinales, permitiendo que el 100% del estímulo vaya al romboides, trapecio medio y dorsal con máximo ratio estímulo/fatiga.',
     why_this_exercise: 'Ideal para principiantes: previene lesiones lumbares y enseña a tirar correctamente con la espalda.',
     ranking_tier: 'S',
@@ -111,6 +113,7 @@ export const DEFAULT_EXERCISES: Exercise[] = [
     common_errors: 'Tirarse hacia atrás con inercia para mover la carga, jalar detrás de la nuca.',
     how_it_should_feel: 'Estiramiento profundo y contracción intensa debajo de las axilas y en los costados.',
     video_url: 'https://www.youtube.com/watch?v=CAwf7n6Luuc',
+    gif_url: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/0818.gif',
     scientific_note: 'El agarre neutro coloca al hombro en una posición biomecánicamente óptima y segura para la trayectoria sagital del dorsal ancho.',
     why_this_exercise: 'Clave para ensanchar la espalda y generar la silueta en V.',
     ranking_tier: 'S',
@@ -139,6 +142,7 @@ export const DEFAULT_EXERCISES: Exercise[] = [
     common_errors: 'Usar impulso de piernas, subir por encima del hombro involucrando el trapecio alto.',
     how_it_should_feel: 'Ardor focalizado exactamente en la cara lateral del hombro.',
     video_url: 'https://www.youtube.com/watch?v=PPrzBWZDOhA',
+    gif_url: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/0178.gif',
     scientific_note: 'La polea mantiene tensión constante durante todo el recorrido, especialmente en el estiramiento donde las mancuernas pierden resistencia.',
     why_this_exercise: 'El ejercicio número 1 indiscutible para hombros anchos y silueta en V.',
     ranking_tier: 'S',
@@ -167,6 +171,7 @@ export const DEFAULT_EXERCISES: Exercise[] = [
     common_errors: 'Balancear el cuerpo para subir las mancuernas, despegar la espalda del banco.',
     how_it_should_feel: 'Tensión extrema en la cabeza larga del bíceps desde el estiramiento profundo.',
     video_url: 'https://www.youtube.com/watch?v=soxrZlIl35U',
+    gif_url: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/0318.gif',
     scientific_note: 'Proporciona hipertrofia mediada por estiramiento de la cabeza larga del bíceps al colocar el hombro en hiperextensión pasiva.',
     why_this_exercise: 'Desarrolla el pico y relieve del bíceps de forma rápida y medible.',
     ranking_tier: 'A',
@@ -195,6 +200,7 @@ export const DEFAULT_EXERCISES: Exercise[] = [
     common_errors: 'Mover los hombros durante el recorrido transformándolo en un press con impulso.',
     how_it_should_feel: 'Estiramiento y quemazón intensa en la parte interna y trasera del brazo.',
     video_url: 'https://www.youtube.com/watch?v=1u18yJmLrTc',
+    gif_url: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/0194.gif',
     scientific_note: 'La cabeza larga del tríceps solo se coloca en estiramiento completo cuando el brazo está elevado sobre la cabeza.',
     why_this_exercise: 'Construye los dos tercios del volumen total del brazo.',
     ranking_tier: 'S',
@@ -223,6 +229,7 @@ export const DEFAULT_EXERCISES: Exercise[] = [
     common_errors: 'Despegar el coxis del respaldo (peligroso para la columna lumbar), dejar caer las rodillas hacia adentro.',
     how_it_should_feel: 'Quema profunda en los muslos sin presión en las lumbares.',
     video_url: 'https://www.youtube.com/watch?v=IZxyjW7MPJQ',
+    gif_url: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/0739.gif',
     scientific_note: 'Alta estabilidad externa comparada con sentadillas libres, permitiendo llegar a RIR 1-2 con máxima seguridad.',
     why_this_exercise: 'Base de fuerza e hipertrofia de piernas con mínimo riesgo de lesión técnica.',
     ranking_tier: 'S',
@@ -251,6 +258,7 @@ export const DEFAULT_EXERCISES: Exercise[] = [
     common_errors: 'Agachar las piernas en sentadilla, doblar la columna por intentar tocar el piso.',
     how_it_should_feel: 'Estiramiento y tensión fuerte en la parte trasera de los muslos y glúteos.',
     video_url: 'https://www.youtube.com/watch?v=JCXUYuzwNrM',
+    gif_url: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/1459.gif',
     scientific_note: 'Entrena los isquiosurales y glúteos en su posición más hipertrófica (estiramiento excéntrico bajo carga).',
     why_this_exercise: 'El mejor constructor de la cadena posterior y postura.',
     ranking_tier: 'S',
@@ -279,6 +287,7 @@ export const DEFAULT_EXERCISES: Exercise[] = [
     common_errors: 'Impulsarse despegando la cadera, dejar caer el peso de golpe al bajar.',
     how_it_should_feel: 'Ardor puro en la cara frontal y media de los muslos.',
     video_url: 'https://www.youtube.com/watch?v=YyvSfVjQeL0',
+    gif_url: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/0585.gif',
     scientific_note: 'Aísla de forma óptima el recto femoral del cuádriceps que no recibe estímulo completo en sentadillas.',
     why_this_exercise: 'Añade relieve y separación al muslo frontal sin fatiga de espalda.',
     ranking_tier: 'S',
@@ -307,6 +316,7 @@ export const DEFAULT_EXERCISES: Exercise[] = [
     common_errors: 'Arquear la espalda lumbar para compensar el peso.',
     how_it_should_feel: 'Contracción profunda en la curva posterior de la rodilla y muslo.',
     video_url: 'https://www.youtube.com/watch?v=ELOCsoDSmrg',
+    gif_url: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/0586.gif',
     scientific_note: 'Estimula los isquiosurales a través de la flexión de rodilla, complementando al RDL.',
     why_this_exercise: 'Protege las rodillas y balancea la masa muscular de las piernas.',
     ranking_tier: 'S',
@@ -335,6 +345,7 @@ export const DEFAULT_EXERCISES: Exercise[] = [
     common_errors: 'Rebotar rápido como resorte sin trabajar el músculo.',
     how_it_should_feel: 'Quemazón concentrada en la pantorrilla.',
     video_url: 'https://www.youtube.com/watch?v=gwLzBJYoWlI',
+    gif_url: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/1370.gif',
     scientific_note: 'La pausa en el fondo elimina el reflejo miotático y la energía elástica del tendón de Aquiles, obligando al gastrocnemio al esfuerzo.',
     why_this_exercise: 'Asegura crecimiento real en pantorrillas.',
     ranking_tier: 'A',
@@ -363,6 +374,7 @@ export const DEFAULT_EXERCISES: Exercise[] = [
     common_errors: 'Dejar caer la cadera hacia el piso o subir el trasero.',
     how_it_should_feel: 'Abdomen de piedra y cintura compacta.',
     video_url: 'https://www.youtube.com/watch?v=ASdvN_XEl_c',
+    gif_url: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/0464.gif',
     scientific_note: 'Fortalece el transverso y recto abdominal mediante resistencia isométrica a la extensión.',
     why_this_exercise: 'Cintura compacta y soporte para todos los ejercicios.',
     ranking_tier: 'A',
@@ -391,6 +403,7 @@ export const DEFAULT_EXERCISES: Exercise[] = [
     common_errors: 'Codos abiertos en T a 90° (daña el hombro), levantar la cabeza.',
     how_it_should_feel: 'Activación plena en el centro y base del pectoral.',
     video_url: 'https://www.youtube.com/watch?v=VmB1G1K7v94',
+    gif_url: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/0289.gif',
     scientific_note: 'Mayor rango de movimiento y convergencia natural de muñecas respecto a la barra fija.',
     why_this_exercise: 'Excelente constructor de masa pectoral global.',
     ranking_tier: 'S',
@@ -419,6 +432,7 @@ export const DEFAULT_EXERCISES: Exercise[] = [
     common_errors: 'Columpiar la espalda hacia atrás en cada repetición por usar peso excesivo.',
     how_it_should_feel: 'Presión y congestión limpia en los costados de la espalda y dorsales bajos.',
     video_url: 'https://www.youtube.com/watch?v=GZbfZ033f74',
+    gif_url: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/0180.gif',
     scientific_note: 'El ángulo horizontal bajo con codos pegados recluta las fibras lumbares e iliocostales del dorsal.',
     why_this_exercise: 'Favorece la silueta en V desde la cintura hacia arriba.',
     ranking_tier: 'S',
@@ -447,6 +461,7 @@ export const DEFAULT_EXERCISES: Exercise[] = [
     common_errors: 'Doblar y estirar los codos convirtiéndolo en tríceps, impulsarse con el cuerpo.',
     how_it_should_feel: 'Tensión pura en los costados de la espalda sin fatiga de bíceps.',
     video_url: 'https://www.youtube.com/watch?v=cM3yP-mI0tY',
+    gif_url: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/0199.gif',
     scientific_note: 'Aísla el dorsal ancho en extensión de hombro eliminando el límite de cansancio del bíceps.',
     why_this_exercise: 'Máximo estímulo de ensanchamiento con cero impacto en muñecas o lumbares.',
     ranking_tier: 'A',
@@ -475,6 +490,7 @@ export const DEFAULT_EXERCISES: Exercise[] = [
     common_errors: 'Dejar que los codos viajen hacia adelante y atrás.',
     how_it_should_feel: 'Aprete directo en la parte externa del brazo.',
     video_url: 'https://www.youtube.com/watch?v=vB5OHsJ3EME',
+    gif_url: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/0200.gif',
     scientific_note: 'La separación de cuerda al final permite contracción máxima de las cabezas lateral y medial.',
     why_this_exercise: 'Moldea la forma de herradura del brazo.',
     ranking_tier: 'A',
@@ -503,6 +519,7 @@ export const DEFAULT_EXERCISES: Exercise[] = [
     common_errors: 'Balancear el torso o subir los codos hacia adelante.',
     how_it_should_feel: 'Sensación de trabajo en el antebrazo y cara lateral del brazo entre bíceps y tríceps.',
     video_url: 'https://www.youtube.com/watch?v=zC3nLlEvin4',
+    gif_url: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/0313.gif',
     scientific_note: 'El agarre neutro coloca al bíceps en desventaja mecánica y transfiere la carga al músculo braquial.',
     why_this_exercise: 'Empuja el bíceps hacia arriba haciendo que el brazo se vea mucho más grueso de frente.',
     ranking_tier: 'S',
@@ -531,6 +548,7 @@ export const DEFAULT_EXERCISES: Exercise[] = [
     common_errors: 'Paso demasiado corto o tambalearse por no fijar la vista en un punto.',
     how_it_should_feel: 'Trabajo profundo y exigente en cuádriceps y glúteo de la pierna delantera.',
     video_url: 'https://www.youtube.com/watch?v=2C-uNgKwPLE',
+    gif_url: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/0410.gif',
     scientific_note: 'Corrige asimetrías de fuerza entre piernas y ofrece alto estímulo con mínima carga espinal.',
     why_this_exercise: 'Excelente desarrollo muscular de piernas y glúteos con mancuernas básicas.',
     ranking_tier: 'S',
@@ -559,6 +577,7 @@ export const DEFAULT_EXERCISES: Exercise[] = [
     common_errors: 'Arquear la espalda al bajar transfiriendo tensión al psoas.',
     how_it_should_feel: 'Quemazón concentrada en la porción inferior del abdomen.',
     video_url: 'https://www.youtube.com/watch?v=hdng3Nm1x_E',
+    gif_url: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/0472.gif',
     scientific_note: 'La retroversión pélvica al final garantiza la activación mecánica del recto abdominal.',
     why_this_exercise: 'Cintura estética y compacta.',
     ranking_tier: 'A',
@@ -649,22 +668,97 @@ export const ALTERNATIVES_MAP: Record<string, { altId: string; reason: string }[
   press_inclinado_mancuernas: [
     { altId: 'press_plano_mancuernas', reason: 'Si el banco ajustable está ocupado o hay molestia en la articulación clavicular.' }
   ],
+  press_plano_mancuernas: [
+    { altId: 'press_inclinado_mancuernas', reason: 'Alternativa directa de empuje pectoral si el banco plano está ocupado.' }
+  ],
   remo_mancuerna_pecho_apoyado: [
     { altId: 'remo_polea_baja_neutro', reason: 'Excelente alternativa con polea si los bancos inclinados están ocupados.' }
+  ],
+  remo_polea_baja_neutro: [
+    { altId: 'remo_mancuerna_pecho_apoyado', reason: 'Tirón horizontal con mancuernas si las poleas están ocupadas.' }
   ],
   jalon_pecho_agarre_neutro: [
     { altId: 'pullover_polea_alta', reason: 'Aísla dorsales sin involucrar bíceps si hay sobrecarga o fatiga en brazos.' }
   ],
-  prensa_piernas_45: [
-    { altId: 'sentadilla_bulgara_mancuernas', reason: 'Permite alto estímulo con mancuernas si la prensa está ocupada.' }
+  pullover_polea_alta: [
+    { altId: 'jalon_pecho_agarre_neutro', reason: 'Tirón vertical para amplitud dorsal si buscas mayor sobrecarga con flexión de codo.' }
   ],
-  peso_muerto_rumano_mancuernas: [
-    { altId: 'curl_femoral_tumbado', reason: 'Aísla isquiosurales sin fatiga de agarre o lumbar si hay molestia.' }
+  elevaciones_laterales_polea: [
+    { altId: 'press_inclinado_mancuernas', reason: 'Empuje con fuerte reclutamiento de hombro frontal y lateral si no hay poleas libres.' }
+  ],
+  curl_biceps_inclinado: [
+    { altId: 'curl_martillo_mancuernas', reason: 'Menor estrés en el tendón bicipital distal.' }
+  ],
+  curl_martillo_mancuernas: [
+    { altId: 'curl_biceps_inclinado', reason: 'Alternativa en banco inclinado para mayor estiramiento de la cabeza larga del bíceps.' }
   ],
   extension_triceps_overhead_polea: [
     { altId: 'triceps_pushdown_polea_cuerda', reason: 'Alternativa segura si falta movilidad de hombro para extender overhead.' }
   ],
-  curl_biceps_inclinado: [
-    { altId: 'curl_martillo_mancuernas', reason: 'Menor estrés en el tendón bicipital distal.' }
+  triceps_pushdown_polea_cuerda: [
+    { altId: 'extension_triceps_overhead_polea', reason: 'Variante overhead para enfocar la cabeza larga en estiramiento profundo.' }
+  ],
+  prensa_piernas_45: [
+    { altId: 'sentadilla_bulgara_mancuernas', reason: 'Permite alto estímulo con mancuernas si la prensa está ocupada.' }
+  ],
+  sentadilla_bulgara_mancuernas: [
+    { altId: 'prensa_piernas_45', reason: 'Máxima estabilidad guiada en prensa para cuádriceps sin requerir equilibrio.' }
+  ],
+  peso_muerto_rumano_mancuernas: [
+    { altId: 'curl_femoral_tumbado', reason: 'Aísla isquiosurales sin fatiga de agarre o lumbar si hay molestia.' }
+  ],
+  curl_femoral_tumbado: [
+    { altId: 'peso_muerto_rumano_mancuernas', reason: 'Cadena posterior completa con mancuernas si la máquina de femoral está ocupada.' }
+  ],
+  extension_piernas_maquina: [
+    { altId: 'prensa_piernas_45', reason: 'Patrón de extensión de rodilla con alto reclutamiento de cuádriceps.' }
+  ],
+  elevacion_talones_gemelos: [
+    { altId: 'prensa_piernas_45', reason: 'Se puede ejecutar apoyando la punta de los pies en el borde de la prensa.' }
+  ],
+  plank_o_cable_woodchopper: [
+    { altId: 'elevacion_piernas_colgado_o_banco', reason: 'Variante dinámica de flexión de cadera para recto abdominal inferior.' }
+  ],
+  elevacion_piernas_colgado_o_banco: [
+    { altId: 'plank_o_cable_woodchopper', reason: 'Resistencia isométrica antirrotacional para compactar el core.' }
   ]
+};
+
+export const WARMUP_MOBILITY_ASSETS = {
+  arm_circles: {
+    title: 'Círculos de brazos & dislocaciones',
+    desc: '15 reps amplias y controladas hacia adelante y atrás para irrigar el manguito rotador.',
+    gif: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/1368.gif',
+    cue: 'Mantén los codos rectos y haz el círculo lo más amplio posible sin arquear la espalda.'
+  },
+  scapular_retractions: {
+    title: 'Retracciones escapulares en pared o banco',
+    desc: '10 repeticiones apretando escápulas sin encoger hombros.',
+    gif: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/0327.gif',
+    cue: 'Imagina sujetar un lápiz entre tus omóplatos durante 1 segundo.'
+  },
+  thoracic_rotation: {
+    title: 'Rotación torácica dinámica',
+    desc: '8 aperturas por lado para liberar la columna dorsal antes de los empujes y tracciones.',
+    gif: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/0464.gif',
+    cue: 'Gira el pecho hacia el techo siguiendo la mano con la mirada.'
+  },
+  ankle_mobility: {
+    title: 'Movilidad de tobillo contra pared',
+    desc: '12 empujes de rodilla hacia adelante manteniendo el talón clavado al piso.',
+    gif: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/1370.gif',
+    cue: 'Avanza la rodilla hacia la pared sin despegar el talón del suelo.'
+  },
+  hip_90_90: {
+    title: 'Aperturas de cadera en 90/90',
+    desc: '8 transiciones suaves de lado a lado para desbloquear rotación interna y externa.',
+    gif: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/1512.gif',
+    cue: 'Ambas piernas dobladas en 90°, cambia de lado con la espalda erguida.'
+  },
+  goblet_squat_hold: {
+    title: 'Sentadilla corporal isométrica (Deep Squat Hold)',
+    desc: '10 segundos en la posición profunda abriendo rodillas con los codos.',
+    gif: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/0291.gif',
+    cue: 'Baja profundo, empuja las rodillas hacia afuera con los codos y mantén el pecho alto.'
+  }
 };

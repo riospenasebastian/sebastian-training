@@ -1,9 +1,23 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Play, Flame, Trophy, Scale, Calendar, Clock, ChevronRight, Sparkles, CheckCircle2, ArrowUpRight } from 'lucide-react';
+import {
+  Play,
+  Flame,
+  Trophy,
+  Scale,
+  Calendar,
+  Clock,
+  ChevronRight,
+  Sparkles,
+  CheckCircle2,
+  ArrowUpRight,
+  HelpCircle,
+  Dumbbell
+} from 'lucide-react';
 import { WorkoutTemplate, WorkoutSession, PersonalRecord, BodyMeasurement } from '../lib/types';
 import MuscleMap from '../components/MuscleMap';
+import MeasurementGuideModal from '../components/MeasurementGuideModal';
 
 interface HomeViewProps {
   templates: WorkoutTemplate[];
@@ -12,6 +26,8 @@ interface HomeViewProps {
   recentPRs: PersonalRecord[];
   latestMeasurement: BodyMeasurement | null;
   onStartWorkout: (template: WorkoutTemplate, timeMode: 'normal' | '45min' | '30min') => void;
+  onResumeWorkout?: () => void;
+  activeWorkoutInfo?: { name: string; elapsedSeconds: number } | null;
   onOpenWarmup: (template: WorkoutTemplate) => void;
   onSaveMeasurement: (weight: number, waist?: number) => void;
   onNavigateTab: (tab: 'workout' | 'progress' | 'more') => void;
@@ -24,6 +40,8 @@ export default function HomeView({
   recentPRs,
   latestMeasurement,
   onStartWorkout,
+  onResumeWorkout,
+  activeWorkoutInfo,
   onOpenWarmup,
   onSaveMeasurement,
   onNavigateTab,
@@ -32,6 +50,7 @@ export default function HomeView({
   const [checkinWeight, setCheckinWeight] = useState(latestMeasurement ? String(latestMeasurement.weight_kg) : '74.5');
   const [checkinWaist, setCheckinWaist] = useState(latestMeasurement?.waist_cm ? String(latestMeasurement.waist_cm) : '84');
   const [showCheckinSuccess, setShowCheckinSuccess] = useState(false);
+  const [isGuideOpen, setIsGuideOpen] = useState(false);
 
   // Determine next template in sequence
   const nextTemplate = templates[currentRoutineIndex % (templates.length || 1)] || templates[0];
@@ -63,6 +82,12 @@ export default function HomeView({
     ? ['pecho_superior', 'dorsal_ancho', 'deltoide_lateral', 'biceps']
     : ['cuadriceps', 'isquiosurales', 'gluteos', 'gemelos'];
 
+  const formatElapsed = (sec: number) => {
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  };
+
   return (
     <div className="flex flex-col space-y-5 pb-24 max-w-md mx-auto px-4 pt-safe">
       {/* Header Profile Greeting */}
@@ -83,6 +108,33 @@ export default function HomeView({
           <span className="text-xs font-bold text-slate-200">{getDaysSinceLast()}</span>
         </div>
       </div>
+
+      {/* ACTIVE WORKOUT FLOATING BANNER (if running in background) */}
+      {activeWorkoutInfo && onResumeWorkout && (
+        <div
+          onClick={onResumeWorkout}
+          className="p-4 rounded-3xl bg-gradient-to-r from-emerald-500/20 via-cyan-500/20 to-blue-500/20 border-2 border-emerald-400 shadow-xl shadow-emerald-500/20 flex items-center justify-between cursor-pointer animate-pulse active:scale-98 transition-all"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-emerald-500 text-slate-950 flex items-center justify-center font-black">
+              <Dumbbell className="w-5 h-5" />
+            </div>
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400 block">
+                Entrenamiento en Curso (Activo)
+              </span>
+              <h3 className="text-sm font-black text-white">{activeWorkoutInfo.name}</h3>
+              <span className="text-xs font-mono text-cyan-300">
+                Tiempo: {formatElapsed(activeWorkoutInfo.elapsedSeconds)}
+              </span>
+            </div>
+          </div>
+
+          <div className="px-3 py-1.5 rounded-xl bg-emerald-500 text-slate-950 font-black text-xs">
+            Continuar →
+          </div>
+        </div>
+      )}
 
       {/* Hero Card: SIGUIENTE ENTRENAMIENTO */}
       {nextTemplate && (
@@ -167,29 +219,34 @@ export default function HomeView({
               className="w-full py-2.5 rounded-xl bg-slate-900/80 border border-slate-700/60 text-xs font-semibold text-slate-300 hover:text-cyan-400 flex items-center justify-center gap-1.5 transition-all"
             >
               <Flame className="w-4 h-4 text-orange-400" />
-              <span>Ver Calentamiento Previo (5m Cardio + Movilidad)</span>
+              <span>Ver Calentamiento Visual (5m Cardio + Movilidad GIF)</span>
             </button>
           </div>
         </div>
       )}
 
-      {/* Quick Check-in (Weight & Waist) */}
+      {/* Quick Check-in (Weight & Waist) + Guide Link */}
       <div className="glass-panel rounded-3xl p-4 space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Scale className="w-4 h-4 text-cyan-400" />
-            <h3 className="text-sm font-bold text-white">Check-in Rápido de Hoy</h3>
+            <h3 className="text-sm font-bold text-white">Check-in de Peso & Cintura</h3>
           </div>
-          {latestMeasurement && (
-            <span className="text-[11px] text-slate-400">
-              Último: {latestMeasurement.weight_kg} kg
-            </span>
-          )}
+
+          {/* Measurement Guide Button */}
+          <button
+            type="button"
+            onClick={() => setIsGuideOpen(true)}
+            className="text-[11px] font-bold text-cyan-400 hover:text-cyan-300 flex items-center gap-1 bg-cyan-500/10 px-2 py-0.5 rounded-lg border border-cyan-500/20"
+          >
+            <HelpCircle className="w-3.5 h-3.5" />
+            <span>¿Cómo medirme?</span>
+          </button>
         </div>
 
         <form onSubmit={handleQuickCheckin} className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-[10px] text-slate-400 block mb-1">Peso corporal (kg)</label>
+            <label className="text-[10px] text-slate-400 block mb-1">Peso en ayunas (kg)</label>
             <input
               type="number"
               step="0.1"
@@ -200,7 +257,7 @@ export default function HomeView({
             />
           </div>
           <div>
-            <label className="text-[10px] text-slate-400 block mb-1">Cintura (cm opcional)</label>
+            <label className="text-[10px] text-slate-400 block mb-1">Cintura a nivel ombligo (cm)</label>
             <input
               type="number"
               step="0.5"
@@ -276,6 +333,12 @@ export default function HomeView({
           </p>
         )}
       </div>
+
+      {/* Measurement & Weighing Protocol Modal */}
+      <MeasurementGuideModal
+        isOpen={isGuideOpen}
+        onClose={() => setIsGuideOpen(false)}
+      />
     </div>
   );
 }

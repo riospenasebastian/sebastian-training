@@ -1,8 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Exercise } from '../lib/types';
-import { X, ExternalLink, Sparkles, AlertCircle, HeartHandshake, Info } from 'lucide-react';
+import { X, ExternalLink, Sparkles, AlertCircle, HeartHandshake, Info, Play, Film, Layers } from 'lucide-react';
 import MuscleMap from './MuscleMap';
 
 interface ExerciseVideoModalProps {
@@ -18,13 +18,15 @@ export default function ExerciseVideoModal({
   onClose,
   beginnerMode = true,
 }: ExerciseVideoModalProps) {
+  const [activeMediaTab, setActiveMediaTab] = useState<'gif' | 'video' | 'muscle'>('gif');
+
   if (!isOpen) return null;
 
   // Extract YouTube ID if present
   let embedUrl = '';
   if (exercise.video_url && exercise.video_url.includes('watch?v=')) {
     const videoId = exercise.video_url.split('watch?v=')[1]?.split('&')[0];
-    if (videoId) embedUrl = `https://www.youtube.com/embed/${videoId}`;
+    if (videoId) embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=0&rel=0`;
   }
 
   return (
@@ -46,43 +48,114 @@ export default function ExerciseVideoModal({
           </button>
         </div>
 
+        {/* Media Switcher Tabs */}
+        <div className="grid grid-cols-3 border-b border-slate-800 text-xs font-semibold bg-slate-950">
+          <button
+            onClick={() => setActiveMediaTab('gif')}
+            className={`py-2.5 flex items-center justify-center gap-1.5 border-b-2 transition-all ${
+              activeMediaTab === 'gif'
+                ? 'border-cyan-400 text-cyan-400 bg-cyan-500/10'
+                : 'border-transparent text-slate-400 hover:text-white'
+            }`}
+          >
+            <Film className="w-4 h-4" />
+            <span>Animación GIF</span>
+          </button>
+
+          <button
+            onClick={() => setActiveMediaTab('video')}
+            className={`py-2.5 flex items-center justify-center gap-1.5 border-b-2 transition-all ${
+              activeMediaTab === 'video'
+                ? 'border-cyan-400 text-cyan-400 bg-cyan-500/10'
+                : 'border-transparent text-slate-400 hover:text-white'
+            }`}
+          >
+            <Play className="w-4 h-4" />
+            <span>Video YouTube</span>
+          </button>
+
+          <button
+            onClick={() => setActiveMediaTab('muscle')}
+            className={`py-2.5 flex items-center justify-center gap-1.5 border-b-2 transition-all ${
+              activeMediaTab === 'muscle'
+                ? 'border-cyan-400 text-cyan-400 bg-cyan-500/10'
+                : 'border-transparent text-slate-400 hover:text-white'
+            }`}
+          >
+            <Layers className="w-4 h-4" />
+            <span>Músculos</span>
+          </button>
+        </div>
+
         {/* Scrollable Body */}
         <div className="p-5 overflow-y-auto space-y-4 flex-1">
-          {/* Video Player */}
-          {embedUrl ? (
-            <div className="w-full aspect-video rounded-2xl overflow-hidden bg-black border border-slate-800 relative">
-              <iframe
-                src={embedUrl}
-                title={exercise.name}
-                className="w-full h-full"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
+          {/* MEDIA DISPLAY */}
+          {activeMediaTab === 'gif' && (
+            <div className="flex flex-col items-center">
+              {exercise.gif_url ? (
+                <div className="w-full max-w-[280px] aspect-square rounded-2xl overflow-hidden bg-slate-950 border border-cyan-500/30 shadow-lg relative flex items-center justify-center">
+                  <img
+                    src={exercise.gif_url}
+                    alt={exercise.name}
+                    className="w-full h-full object-contain p-2"
+                    loading="eager"
+                  />
+                  <span className="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-black/70 text-[9px] text-cyan-300 font-mono">
+                    Loop continuo
+                  </span>
+                </div>
+              ) : (
+                <div className="w-full aspect-video rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400 text-xs">
+                  Animación próximamente disponible
+                </div>
+              )}
             </div>
-          ) : (
-            <a
-              href={exercise.video_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-4 rounded-2xl bg-cyan-950/30 border border-cyan-500/30 flex items-center justify-between group hover:bg-cyan-900/40 transition-all"
-            >
-              <div className="flex items-center gap-2 text-cyan-400 font-semibold text-xs">
-                <span>Ver demostración en YouTube</span>
-                <ExternalLink className="w-4 h-4" />
-              </div>
-            </a>
           )}
 
-          {/* Muscle Map Anatomy */}
-          <div className="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800">
-            <span className="text-xs font-bold text-slate-300 block mb-2">Activación Muscular</span>
-            <MuscleMap
-              primaryMuscles={exercise.primary_muscles}
-              secondaryMuscles={exercise.secondary_muscles}
-              size="sm"
-              showLabels
-            />
-          </div>
+          {activeMediaTab === 'video' && (
+            <div className="space-y-3">
+              {embedUrl ? (
+                <div className="w-full aspect-video rounded-2xl overflow-hidden bg-black border border-slate-800 relative shadow-lg">
+                  <iframe
+                    src={embedUrl}
+                    title={exercise.name}
+                    className="w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
+              ) : null}
+
+              {exercise.video_url && (
+                <a
+                  href={exercise.video_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-3.5 rounded-2xl bg-cyan-950/40 border border-cyan-500/30 flex items-center justify-between group hover:bg-cyan-900/40 transition-all text-xs text-cyan-300 font-semibold"
+                >
+                  <div className="flex items-center gap-2">
+                    <Play className="w-4 h-4 text-red-500 fill-red-500" />
+                    <span>Abrir guía completa de Jeff Nippard en la app de YouTube</span>
+                  </div>
+                  <ExternalLink className="w-4 h-4 text-cyan-400 group-hover:translate-x-0.5 transition-transform" />
+                </a>
+              )}
+            </div>
+          )}
+
+          {activeMediaTab === 'muscle' && (
+            <div className="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800">
+              <span className="text-xs font-bold text-slate-300 block mb-2 text-center">
+                Músculos Primarios y Secundarios
+              </span>
+              <MuscleMap
+                primaryMuscles={exercise.primary_muscles}
+                secondaryMuscles={exercise.secondary_muscles}
+                size="md"
+                showLabels
+              />
+            </div>
+          )}
 
           {/* Beginner Mode Helper */}
           {beginnerMode && (

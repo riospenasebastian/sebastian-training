@@ -52,6 +52,7 @@ export interface Exercise {
   common_errors: string;
   how_it_should_feel: string;
   video_url: string;
+  gif_url?: string;
   scientific_note: string;
   why_this_exercise: string;
   ranking_tier: 'S' | 'A' | 'B';

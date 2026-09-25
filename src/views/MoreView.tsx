@@ -242,22 +242,34 @@ export default function MoreView({
               <div
                 key={ex.id}
                 onClick={() => setActiveModalExercise(ex)}
-                className="p-3.5 rounded-2xl bg-slate-900/70 border border-slate-800 hover:border-cyan-500/40 flex items-center justify-between cursor-pointer group transition-all"
+                className="p-3 rounded-2xl bg-slate-900/70 border border-slate-800 hover:border-cyan-500/40 flex items-center justify-between cursor-pointer group transition-all"
               >
-                <div>
-                  <div className="flex items-center gap-1.5 mb-0.5">
-                    <span className="px-1.5 py-0.5 rounded text-[9px] font-black bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
-                      Tier {ex.ranking_tier}
-                    </span>
-                    <h4 className="text-xs font-bold text-white group-hover:text-cyan-300">
-                      {ex.name}
-                    </h4>
+                <div className="flex items-center gap-3">
+                  {ex.gif_url && (
+                    <div className="w-12 h-12 rounded-xl bg-slate-950 p-1 border border-slate-800 shrink-0 overflow-hidden">
+                      <img
+                        src={ex.gif_url}
+                        alt={ex.name}
+                        className="w-full h-full object-contain"
+                        loading="lazy"
+                      />
+                    </div>
+                  )}
+                  <div>
+                    <div className="flex items-center gap-1.5 mb-0.5">
+                      <span className="px-1.5 py-0.5 rounded text-[9px] font-black bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+                        Tier {ex.ranking_tier}
+                      </span>
+                      <h4 className="text-xs font-bold text-white group-hover:text-cyan-300">
+                        {ex.name}
+                      </h4>
+                    </div>
+                    <p className="text-[10px] text-slate-400">
+                      {ex.default_sets} series × {ex.rep_range_min}-{ex.rep_range_max} reps • {ex.default_rest_sec}s descanso
+                    </p>
                   </div>
-                  <p className="text-[10px] text-slate-400">
-                    {ex.default_sets} series × {ex.rep_range_min}-{ex.rep_range_max} reps • {ex.default_rest_sec}s descanso
-                  </p>
                 </div>
-                <ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-cyan-400" />
+                <ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-cyan-400 shrink-0" />
               </div>
             ))}
           </div>

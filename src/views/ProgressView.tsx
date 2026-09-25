@@ -24,6 +24,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 import MuscleMap from '../components/MuscleMap';
+import MeasurementGuideModal from '../components/MeasurementGuideModal';
 import { DEFAULT_EXERCISES } from '../lib/data-defaults';
 
 interface ProgressViewProps {
@@ -41,6 +42,7 @@ export default function ProgressView({
 }: ProgressViewProps) {
   const [activeTab, setActiveTab] = useState<'metrics' | 'muscles' | 'prs' | 'photos'>('metrics');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showGuide, setShowGuide] = useState(false);
 
   // New measurement form state
   const [newWeight, setNewWeight] = useState('');
@@ -130,13 +132,22 @@ export default function ProgressView({
           </span>
           <h1 className="text-2xl font-black text-white tracking-tight">Progreso</h1>
         </div>
-        <button
-          onClick={() => setShowAddModal(true)}
-          className="px-3 py-1.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs flex items-center gap-1 shadow-md transition-all active:scale-95"
-        >
-          <Plus className="w-3.5 h-3.5" />
-          <span>Registrar</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowGuide(true)}
+            className="px-2.5 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-cyan-400 font-bold text-xs flex items-center gap-1 shadow-sm hover:border-cyan-500/40"
+          >
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>Guía Medidas</span>
+          </button>
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="px-3 py-1.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs flex items-center gap-1 shadow-md transition-all active:scale-95"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Registrar</span>
+          </button>
+        </div>
       </div>
 
       {/* Tabs */}
@@ -498,6 +509,12 @@ export default function ProgressView({
           </div>
         </div>
       )}
+
+      {/* Measurement Guide Modal */}
+      <MeasurementGuideModal
+        isOpen={showGuide}
+        onClose={() => setShowGuide(false)}
+      />
     </div>
   );
 }

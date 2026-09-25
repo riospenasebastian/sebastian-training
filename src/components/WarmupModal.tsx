@@ -1,8 +1,21 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Activity, Flame, ShieldAlert, CheckCircle2, ChevronRight, Play, Pause, RotateCcw, X } from 'lucide-react';
+import {
+  Activity,
+  Flame,
+  CheckCircle2,
+  ChevronRight,
+  Play,
+  Pause,
+  RotateCcw,
+  X,
+  ExternalLink,
+  Sparkles,
+  Info
+} from 'lucide-react';
 import { WorkoutTemplate } from '../lib/types';
+import { WARMUP_MOBILITY_ASSETS } from '../lib/data-defaults';
 
 interface WarmupModalProps {
   template: WorkoutTemplate;
@@ -25,6 +38,7 @@ export default function WarmupModal({
   const [cardioSeconds, setCardioSeconds] = useState(300); // 5 min
   const [isCardioRunning, setIsCardioRunning] = useState(false);
   const [mobilityChecks, setMobilityChecks] = useState<boolean[]>([false, false, false]);
+  const [expandedMobilityIdx, setExpandedMobilityIdx] = useState<number | null>(0);
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
@@ -43,14 +57,14 @@ export default function WarmupModal({
   const isUpper = template.code.startsWith('upper');
   const mobilityItems = isUpper
     ? [
-        { title: 'Círculos de brazos & dislocaciones', desc: '15 reps amplias y controladas hacia adelante y atrás para irrigar el manguito rotador.' },
-        { title: 'Retracciones escapulares en pared o banco', desc: '10 repeticiones apretando escápulas sin encoger hombros.' },
-        { title: 'Rotación torácica dinámica', desc: '8 aperturas por lado para liberar la columna dorsal antes de los empujes y tracciones.' }
+        WARMUP_MOBILITY_ASSETS.arm_circles,
+        WARMUP_MOBILITY_ASSETS.scapular_retractions,
+        WARMUP_MOBILITY_ASSETS.thoracic_rotation,
       ]
     : [
-        { title: 'Movilidad de tobillo contra pared', desc: '12 empujes de rodilla hacia adelante manteniendo el talón clavado al piso.' },
-        { title: 'Aperturas de cadera en 90/90', desc: '8 transiciones suaves de lado a lado para desbloquear rotación interna y externa.' },
-        { title: 'Sentadilla corporal isométrica (Goblet pose)', desc: '10 segundos en la posición profunda abriendo rodillas con los codos.' }
+        WARMUP_MOBILITY_ASSETS.ankle_mobility,
+        WARMUP_MOBILITY_ASSETS.hip_90_90,
+        WARMUP_MOBILITY_ASSETS.goblet_squat_hold,
       ];
 
   // Feeder sets calculation
@@ -68,13 +82,13 @@ export default function WarmupModal({
 
   return (
     <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4">
-      <div className="w-full max-w-lg rounded-t-3xl sm:rounded-3xl bg-[#121622] border border-cyan-500/20 max-h-[90vh] flex flex-col overflow-hidden shadow-2xl">
+      <div className="w-full max-w-lg rounded-t-3xl sm:rounded-3xl bg-[#121622] border border-cyan-500/20 max-h-[92vh] flex flex-col overflow-hidden shadow-2xl">
         {/* Header */}
-        <div className="p-5 border-b border-slate-800 flex items-center justify-between bg-slate-900/60">
+        <div className="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/60">
           <div className="flex items-center gap-2.5">
             <Flame className="w-5 h-5 text-orange-400" />
             <div>
-              <h2 className="text-base font-bold text-white">Calentamiento Guiado</h2>
+              <h2 className="text-base font-bold text-white">Calentamiento Guiado Visual</h2>
               <p className="text-xs text-slate-400">{template.name}</p>
             </div>
           </div>
@@ -101,7 +115,7 @@ export default function WarmupModal({
             }`}
           >
             <span>Paso 2</span>
-            <span className="text-[10px] opacity-80">Movilidad</span>
+            <span className="text-[10px] opacity-80">Movilidad Visual</span>
           </button>
           <button
             onClick={() => setStep(3)}
@@ -115,12 +129,12 @@ export default function WarmupModal({
         </div>
 
         {/* Content Body */}
-        <div className="p-5 overflow-y-auto space-y-4 flex-1">
+        <div className="p-4 overflow-y-auto space-y-4 flex-1">
           {step === 1 && (
             <div className="space-y-4">
               <div className="p-4 rounded-2xl bg-cyan-950/30 border border-cyan-500/20 text-xs text-cyan-200 leading-relaxed">
                 <span className="font-bold text-cyan-400 block mb-1">🎯 Objetivo:</span>
-                Caminar en cinta, pedalear en bicicleta estática o elíptica suave durante 5 minutos.
+                Caminar en cinta con inclinación leve, pedalear en bicicleta o elíptica suave durante 5 minutos.
                 Debe elevar la temperatura de músculos y tendones. <strong>No debe cansarte</strong>; debes poder hablar con oraciones completas normalmente sin jadear.
               </div>
 
@@ -155,37 +169,86 @@ export default function WarmupModal({
 
           {step === 2 && (
             <div className="space-y-3">
-              <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200">
-                <strong>Nota científica:</strong> No realices estiramientos estáticos largos antes de levantar, reducen la fuerza muscular momentánea. Realiza movimientos dinámicos específicos:
+              <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200">
+                <strong>¿Por qué y cómo hacerlos?</strong> Toca cada ejercicio para ver la animación GIF de cómo se ejecuta paso a paso:
               </div>
 
-              {mobilityItems.map((item, idx) => (
-                <div
-                  key={idx}
-                  onClick={() => {
-                    const next = [...mobilityChecks];
-                    next[idx] = !next[idx];
-                    setMobilityChecks(next);
-                  }}
-                  className={`p-3.5 rounded-xl border flex items-start gap-3 cursor-pointer transition-all ${
-                    mobilityChecks[idx]
-                      ? 'bg-emerald-950/20 border-emerald-500/30'
-                      : 'bg-slate-900/60 border-slate-800 hover:border-slate-700'
-                  }`}
-                >
-                  <div className="mt-0.5">
-                    {mobilityChecks[idx] ? (
-                      <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-                    ) : (
-                      <div className="w-5 h-5 rounded-full border-2 border-slate-600" />
+              {mobilityItems.map((item, idx) => {
+                const isExpanded = expandedMobilityIdx === idx;
+                const isChecked = mobilityChecks[idx];
+                return (
+                  <div
+                    key={idx}
+                    className={`rounded-2xl border transition-all overflow-hidden ${
+                      isChecked
+                        ? 'bg-emerald-950/20 border-emerald-500/40'
+                        : isExpanded
+                        ? 'bg-slate-900 border-cyan-500/40'
+                        : 'bg-slate-900/70 border-slate-800'
+                    }`}
+                  >
+                    {/* Item Header */}
+                    <div
+                      onClick={() => setExpandedMobilityIdx(isExpanded ? null : idx)}
+                      className="p-3.5 flex items-center justify-between cursor-pointer select-none"
+                    >
+                      <div className="flex items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const next = [...mobilityChecks];
+                            next[idx] = !next[idx];
+                            setMobilityChecks(next);
+                          }}
+                          className="mt-0.5"
+                        >
+                          {isChecked ? (
+                            <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                          ) : (
+                            <div className="w-5 h-5 rounded-full border-2 border-slate-600 hover:border-cyan-400 transition-colors" />
+                          )}
+                        </button>
+                        <div>
+                          <h4 className="text-xs font-bold text-white">{item.title}</h4>
+                          <span className="text-[10px] text-cyan-400 font-medium">
+                            {isExpanded ? 'Toca para cerrar' : 'Toca para ver animación GIF'}
+                          </span>
+                        </div>
+                      </div>
+
+                      <ChevronRight
+                        className={`w-4 h-4 text-slate-500 transition-transform ${
+                          isExpanded ? 'rotate-90 text-cyan-400' : ''
+                        }`}
+                      />
+                    </div>
+
+                    {/* Expanded Visual & GIF */}
+                    {isExpanded && (
+                      <div className="px-4 pb-4 pt-1 border-t border-slate-800 space-y-3">
+                        <div className="flex justify-center bg-slate-950 rounded-2xl p-2 border border-slate-800/80">
+                          <img
+                            src={item.gif}
+                            alt={item.title}
+                            className="w-36 h-36 object-contain rounded-xl"
+                            loading="eager"
+                          />
+                        </div>
+
+                        <p className="text-xs text-slate-300 leading-relaxed">{item.desc}</p>
+
+                        <div className="p-2.5 rounded-xl bg-cyan-950/30 border border-cyan-500/20 text-[11px] text-cyan-300 flex items-start gap-1.5">
+                          <Sparkles className="w-3.5 h-3.5 text-cyan-400 shrink-0 mt-0.5" />
+                          <span>
+                            <strong>Clave técnica:</strong> {item.cue}
+                          </span>
+                        </div>
+                      </div>
                     )}
                   </div>
-                  <div>
-                    <h4 className="text-sm font-semibold text-white">{item.title}</h4>
-                    <p className="text-xs text-slate-400 mt-0.5">{item.desc}</p>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
 
@@ -250,7 +313,7 @@ export default function WarmupModal({
               onClick={() => setStep((s) => (s + 1) as 1 | 2 | 3)}
               className="flex-1 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs flex items-center justify-center gap-1.5 shadow-md transition-all active:scale-98"
             >
-              <span>Siguiente ({step === 1 ? 'Movilidad' : 'Aproximación'})</span>
+              <span>Siguiente ({step === 1 ? 'Movilidad Visual' : 'Aproximación'})</span>
               <ChevronRight className="w-4 h-4" />
             </button>
           ) : (

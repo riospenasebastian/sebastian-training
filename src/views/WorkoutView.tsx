@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import {
   WorkoutTemplate,
   WorkoutSession,
-  WorkoutExerciseRecord,
   WorkoutSetRecord,
   Exercise,
   PersonalRecord,
@@ -12,6 +11,7 @@ import {
 } from '../lib/types';
 import {
   Play,
+  Pause,
   CheckCircle2,
   Clock,
   Video,
@@ -25,12 +25,15 @@ import {
   ShieldAlert,
   Flame,
   X,
-  Target
+  Target,
+  Minimize2,
+  Maximize2
 } from 'lucide-react';
 import MuscleMap from '../components/MuscleMap';
 import RestTimer from '../components/RestTimer';
 import ExerciseVideoModal from '../components/ExerciseVideoModal';
 import ExerciseFeedbackModal from '../components/ExerciseFeedbackModal';
+import ExerciseSubstitutionModal from '../components/ExerciseSubstitutionModal';
 import { ALTERNATIVES_MAP, DEFAULT_EXERCISES } from '../lib/data-defaults';
 import confetti from 'canvas-confetti';
 
@@ -41,7 +44,15 @@ interface WorkoutViewProps {
   pastSessions: WorkoutSession[];
   onFinishWorkout: (session: WorkoutSession, newPRs: PersonalRecord[]) => void;
   onCancelWorkout: () => void;
+  onMinimizeWorkout: () => void;
   beginnerMode?: boolean;
+  savedState?: {
+    currentExIndex: number;
+    elapsedSeconds: number;
+    isPaused: boolean;
+    exercisesList: any[];
+  } | null;
+  onSaveState?: (state: any) => void;
 }
 
 export default function WorkoutView({
@@ -51,7 +62,10 @@ export default function WorkoutView({
   pastSessions,
   onFinishWorkout,
   onCancelWorkout,
+  onMinimizeWorkout,
   beginnerMode = true,
+  savedState,
+  onSaveState,
 }: WorkoutViewProps) {
   // Filter template exercises based on time mode
   const templateExercises = (template.exercises || []).filter((te) => {
@@ -60,7 +74,7 @@ export default function WorkoutView({
     return true; // normal mode has all
   });
 
-  const [currentExIndex, setCurrentExIndex] = useState(0);
+  const [currentExIndex, setCurrentExIndex] = useState(savedState?.currentExIndex || 0);
   const [exercisesList, setExercisesList] = useState<
     {
       templateExercise: WorkoutTemplateExercise;
@@ -69,26 +83,30 @@ export default function WorkoutView({
       feeling?: 'very_easy' | 'good' | 'very_heavy' | 'pain';
       notes?: string;
     }[]
-  >([]);
+  >(savedState?.exercisesList || []);
+
+  // Pause / Resume state
+  const [isPaused, setIsPaused] = useState(savedState?.isPaused || false);
 
   // Rest Timer State
   const [isRestTimerOpen, setIsRestTimerOpen] = useState(false);
   const [restTimerSeconds, setRestTimerSeconds] = useState(120);
 
-  // Video modal
+  // Modals
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
-
-  // Feedback modal
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
+  const [isSubModalOpen, setIsSubModalOpen] = useState(false);
 
   // New PR notifications
   const [unlockedPRs, setUnlockedPRs] = useState<PersonalRecord[]>([]);
 
   // Elapsed workout time
-  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [elapsedSeconds, setElapsedSeconds] = useState(savedState?.elapsedSeconds || 0);
 
-  // Initialize exercises and sets
+  // Initialize exercises and sets if not already loaded from savedState
   useEffect(() => {
+    if (exercisesList.length > 0) return;
+
     const list = templateExercises.map((te) => {
       const ex =
         allExercises.find((e) => e.id === te.exercise_id) ||
@@ -122,13 +140,24 @@ export default function WorkoutView({
     setExercisesList(list);
   }, [template, timeMode]);
 
-  // Workout duration timer
+  // Workout duration timer (only runs when NOT paused)
   useEffect(() => {
+    if (isPaused) return;
+
     const timer = setInterval(() => {
-      setElapsedSeconds((prev) => prev + 1);
+      setElapsedSeconds((prev) => {
+        const next = prev + 1;
+        onSaveState?.({
+          currentExIndex,
+          elapsedSeconds: next,
+          isPaused,
+          exercisesList,
+        });
+        return next;
+      });
     }, 1000);
     return () => clearInterval(timer);
-  }, []);
+  }, [isPaused, currentExIndex, exercisesList]);
 
   function getPreviousSessionSets(exerciseId: string) {
     for (const session of pastSessions) {
@@ -175,6 +204,12 @@ export default function WorkoutView({
       const nextSets = [...exItem.sets];
       nextSets[setIndex] = { ...nextSets[setIndex], [field]: value };
       exItem.sets = nextSets;
+      onSaveState?.({
+        currentExIndex,
+        elapsedSeconds,
+        isPaused,
+        exercisesList: next,
+      });
       return next;
     });
   };
@@ -189,12 +224,17 @@ export default function WorkoutView({
       const nextSets = [...exItem.sets];
       nextSets[setIndex] = { ...nextSets[setIndex], completed: willBeCompleted };
       exItem.sets = nextSets;
+      onSaveState?.({
+        currentExIndex,
+        elapsedSeconds,
+        isPaused,
+        exercisesList: next,
+      });
       return next;
     });
 
     if (willBeCompleted) {
       // Check PR potential
-      const e1rm = Math.round(currentSet.weight_kg * (1 + currentSet.reps / 30) * 10) / 10;
       if (currentSet.weight_kg > prevMaxWeight && prevMaxWeight > 0) {
         try {
           confetti({ particleCount: 40, spread: 60, origin: { y: 0.8 } });
@@ -219,6 +259,12 @@ export default function WorkoutView({
         ...next[currentExIndex],
         exercise: newEx,
       };
+      onSaveState?.({
+        currentExIndex,
+        elapsedSeconds,
+        isPaused,
+        exercisesList: next,
+      });
       return next;
     });
   };
@@ -286,28 +332,56 @@ export default function WorkoutView({
 
   return (
     <div className="flex flex-col min-h-screen pb-28 max-w-md mx-auto px-4 pt-safe">
-      {/* Top Bar: Progress and Timer */}
-      <div className="flex items-center justify-between py-2 border-b border-slate-800/80 mb-3">
-        <button
-          onClick={onCancelWorkout}
-          className="text-xs text-slate-400 hover:text-red-400 flex items-center gap-1"
-        >
-          <X className="w-4 h-4" />
-          <span>Cancelar</span>
-        </button>
-
+      {/* Top Bar: Controls, Timer and Background Minimizer */}
+      <div className="flex items-center justify-between py-2 border-b border-slate-800/80 mb-3 bg-[#090A0F]/80 backdrop-blur sticky top-0 z-30">
         <div className="flex items-center gap-2">
-          <Clock className="w-4 h-4 text-cyan-400 animate-pulse" />
+          {/* Minimize / Return to Home without cancelling */}
+          <button
+            onClick={onMinimizeWorkout}
+            title="Minimizar y ver otras pantallas"
+            className="px-2.5 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-400 font-bold text-xs flex items-center gap-1 active:scale-95 transition-all"
+          >
+            <Minimize2 className="w-3.5 h-3.5" />
+            <span>Inicio</span>
+          </button>
+
+          <button
+            onClick={onCancelWorkout}
+            className="text-xs text-slate-500 hover:text-red-400"
+          >
+            Cancelar
+          </button>
+        </div>
+
+        {/* Stopwatch & Pause / Resume Toggle */}
+        <div className="flex items-center gap-1.5 bg-slate-900 px-3 py-1 rounded-full border border-slate-800">
+          <button
+            onClick={() => setIsPaused(!isPaused)}
+            className={`p-1 rounded-full text-slate-950 transition-colors ${
+              isPaused ? 'bg-amber-400' : 'bg-cyan-400'
+            }`}
+            title={isPaused ? 'Reanudar tiempo' : 'Pausar tiempo'}
+          >
+            {isPaused ? <Play className="w-3 h-3 fill-current" /> : <Pause className="w-3 h-3 fill-current" />}
+          </button>
+
           <span className="font-mono text-xs font-bold text-white tracking-wider">
             {formatElapsed()}
           </span>
+
+          {isPaused && (
+            <span className="text-[9px] font-black text-amber-400 uppercase tracking-wider animate-pulse ml-0.5">
+              Pausa
+            </span>
+          )}
         </div>
 
+        {/* Progress indicator */}
         <div className="text-right">
-          <span className="text-[10px] text-slate-400 block">Progreso</span>
           <span className="text-xs font-black text-cyan-400 font-mono">
-            {completedSetsCount}/{totalSetsCount} series
+            {completedSetsCount}/{totalSetsCount}
           </span>
+          <span className="text-[9px] text-slate-500 block">series</span>
         </div>
       </div>
 
@@ -336,10 +410,10 @@ export default function WorkoutView({
         })}
       </div>
 
-      {/* Current Exercise Header Card */}
+      {/* ULTRA-VISUAL Exercise Header Card */}
       <div className="glass-panel-elevated rounded-3xl p-4 space-y-3 relative overflow-hidden">
-        <div className="flex items-start justify-between">
-          <div>
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex-1">
             <div className="flex items-center gap-1.5 mb-1">
               <span className="px-2 py-0.5 rounded text-[10px] font-black bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
                 Tier {currentEx.ranking_tier}
@@ -356,12 +430,44 @@ export default function WorkoutView({
             </p>
           </div>
 
+          {/* Direct Exercise Animated GIF Preview */}
+          {currentEx.gif_url && (
+            <div
+              onClick={() => setIsVideoModalOpen(true)}
+              className="w-20 h-20 rounded-2xl overflow-hidden bg-slate-950 border border-cyan-500/40 shadow-lg relative cursor-pointer group shrink-0"
+              title="Toca para ver en grande y video"
+            >
+              <img
+                src={currentEx.gif_url}
+                alt={currentEx.name}
+                className="w-full h-full object-contain p-1 group-hover:scale-105 transition-transform"
+                loading="eager"
+              />
+              <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent flex items-end justify-center pb-1">
+                <span className="text-[8px] font-bold px-1.5 py-0.2 bg-black/70 text-cyan-300 rounded">
+                  GIF Técnica
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Buttons to view details */}
+        <div className="flex gap-2 pt-1">
           <button
             onClick={() => setIsVideoModalOpen(true)}
-            className="p-2.5 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/20 flex flex-col items-center gap-1 active:scale-95 transition-all"
+            className="flex-1 py-2 px-3 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/20 flex items-center justify-center gap-1.5 text-xs font-bold active:scale-95 transition-all"
           >
-            <Video className="w-5 h-5" />
-            <span className="text-[9px] font-bold">Ver Técnica</span>
+            <Video className="w-4 h-4" />
+            <span>Ver Técnica Completa (GIF / Video)</span>
+          </button>
+
+          <button
+            onClick={() => setIsSubModalOpen(true)}
+            className="py-2 px-3 rounded-xl bg-slate-900 border border-slate-700/80 text-slate-300 hover:text-white flex items-center justify-center gap-1.5 text-xs font-semibold active:scale-95 transition-all"
+          >
+            <RefreshCw className="w-3.5 h-3.5 text-cyan-400" />
+            <span>Sustituir</span>
           </button>
         </div>
 
@@ -577,14 +683,7 @@ export default function WorkoutView({
           {/* Substitute Exercise button */}
           <button
             type="button"
-            onClick={() => {
-              const alts = ALTERNATIVES_MAP[currentEx.id] || [];
-              if (alts.length > 0) {
-                handleSubstituteExercise(alts[0].altId);
-              } else {
-                alert('No hay alternativas directas registradas para este ejercicio.');
-              }
-            }}
+            onClick={() => setIsSubModalOpen(true)}
             className="flex-1 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs font-semibold text-slate-300 hover:text-cyan-400 flex items-center justify-center gap-1.5 transition-all"
           >
             <RefreshCw className="w-3.5 h-3.5" />
@@ -648,6 +747,14 @@ export default function WorkoutView({
         isOpen={isFeedbackModalOpen}
         onClose={() => setIsFeedbackModalOpen(false)}
         onSubmit={handleFeedbackSubmit}
+        onSelectAlternative={handleSubstituteExercise}
+      />
+
+      <ExerciseSubstitutionModal
+        currentExercise={currentEx}
+        allExercises={allExercises}
+        isOpen={isSubModalOpen}
+        onClose={() => setIsSubModalOpen(false)}
         onSelectAlternative={handleSubstituteExercise}
       />
     </div>

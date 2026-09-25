@@ -29,6 +29,8 @@ import ProgressView from '../views/ProgressView';
 import MoreView from '../views/MoreView';
 import WarmupModal from '../components/WarmupModal';
 
+const ACTIVE_WORKOUT_STORAGE_KEY = 'sebasgym_active_workout_state';
+
 export default function App() {
   const [currentTab, setCurrentTab] = useState<TabType>('home');
   const [profile, setProfile] = useState<Profile>({
@@ -44,10 +46,11 @@ export default function App() {
   const [measurements, setMeasurements] = useState<BodyMeasurement[]>([]);
   const [personalRecords, setPersonalRecords] = useState<PersonalRecord[]>([]);
 
-  // Active workout state
+  // Active workout state with persistence
   const [activeWorkout, setActiveWorkout] = useState<{
     template: WorkoutTemplate;
     timeMode: 'normal' | '45min' | '30min';
+    savedState?: any;
   } | null>(null);
 
   // Warmup modal state
@@ -56,7 +59,7 @@ export default function App() {
     template: WorkoutTemplate | null;
   }>({ isOpen: false, template: null });
 
-  // Initial data loading
+  // Initial data loading & restoring active workout
   useEffect(() => {
     async function loadData() {
       try {
@@ -75,6 +78,19 @@ export default function App() {
         if (hist) setWorkoutHistory(hist);
         if (meas) setMeasurements(meas);
         if (prs) setPersonalRecords(prs);
+
+        // Check if there was an active workout in localStorage
+        if (typeof window !== 'undefined') {
+          const stored = localStorage.getItem(ACTIVE_WORKOUT_STORAGE_KEY);
+          if (stored) {
+            try {
+              const parsed = JSON.parse(stored);
+              if (parsed && parsed.template) {
+                setActiveWorkout(parsed);
+              }
+            } catch {}
+          }
+        }
       } catch (e) {
         console.warn('Using default initialization', e);
       }
@@ -87,8 +103,24 @@ export default function App() {
     template: WorkoutTemplate,
     timeMode: 'normal' | '45min' | '30min'
   ) => {
-    setActiveWorkout({ template, timeMode });
+    const workoutData = { template, timeMode, savedState: null };
+    setActiveWorkout(workoutData);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(ACTIVE_WORKOUT_STORAGE_KEY, JSON.stringify(workoutData));
+    }
     setCurrentTab('workout');
+  };
+
+  const handleSaveActiveWorkoutState = (state: any) => {
+    if (!activeWorkout) return;
+    const updated = {
+      ...activeWorkout,
+      savedState: state,
+    };
+    setActiveWorkout(updated);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(ACTIVE_WORKOUT_STORAGE_KEY, JSON.stringify(updated));
+    }
   };
 
   const handleFinishWorkout = async (session: WorkoutSession) => {
@@ -118,14 +150,22 @@ export default function App() {
     const nextIndex = (profile.current_routine_index + 1) % 4;
     setProfile((prev) => ({ ...prev, current_routine_index: nextIndex }));
 
-    // 4. Return to home view
+    // 4. Clear active workout from memory and localStorage
     setActiveWorkout(null);
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(ACTIVE_WORKOUT_STORAGE_KEY);
+    }
+
+    // 5. Return to home view
     setCurrentTab('home');
   };
 
   const handleCancelWorkout = () => {
-    if (confirm('¿Deseas cancelar el entrenamiento actual?')) {
+    if (confirm('¿Deseas cancelar el entrenamiento actual? Se descartará el tiempo y las series no guardadas.')) {
       setActiveWorkout(null);
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem(ACTIVE_WORKOUT_STORAGE_KEY);
+      }
       setCurrentTab('home');
     }
   };
@@ -161,6 +201,15 @@ export default function App() {
             recentPRs={personalRecords}
             latestMeasurement={latestMeasurement}
             onStartWorkout={handleStartWorkout}
+            onResumeWorkout={() => setCurrentTab('workout')}
+            activeWorkoutInfo={
+              activeWorkout
+                ? {
+                    name: activeWorkout.template.name,
+                    elapsedSeconds: activeWorkout.savedState?.elapsedSeconds || 0,
+                  }
+                : null
+            }
             onOpenWarmup={(tpl) => setWarmupModal({ isOpen: true, template: tpl })}
             onSaveMeasurement={handleSaveMeasurement}
             onNavigateTab={setCurrentTab}
@@ -176,7 +225,10 @@ export default function App() {
               pastSessions={workoutHistory}
               onFinishWorkout={handleFinishWorkout}
               onCancelWorkout={handleCancelWorkout}
+              onMinimizeWorkout={() => setCurrentTab('home')}
               beginnerMode={profile.beginner_mode}
+              savedState={activeWorkout.savedState}
+              onSaveState={handleSaveActiveWorkoutState}
             />
           ) : (
             <div className="p-8 text-center flex flex-col items-center justify-center min-h-[60vh] max-w-sm mx-auto space-y-4 pt-safe">
@@ -238,14 +290,12 @@ export default function App() {
         />
       )}
 
-      {/* Mobile Bottom Navigation (Hidden during active workout to maximize screen real-estate) */}
-      {!activeWorkout && (
-        <BottomNav
-          currentTab={currentTab}
-          onChangeTab={setCurrentTab}
-          hasActiveWorkout={!!activeWorkout}
-        />
-      )}
+      {/* Mobile Bottom Navigation (Always accessible, shows active badge when workout is running) */}
+      <BottomNav
+        currentTab={currentTab}
+        onChangeTab={setCurrentTab}
+        hasActiveWorkout={!!activeWorkout}
+      />
     </main>
   );
 }
