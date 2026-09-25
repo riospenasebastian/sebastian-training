@@ -345,7 +345,7 @@ export const DEFAULT_EXERCISES: Exercise[] = [
     common_errors: 'Rebotar rápido como resorte sin trabajar el músculo.',
     how_it_should_feel: 'Quemazón concentrada en la pantorrilla.',
     video_url: 'https://www.youtube.com/watch?v=gwLzBJYoWlI',
-    gif_url: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/1370.gif',
+    gif_url: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/1379.gif',
     scientific_note: 'La pausa en el fondo elimina el reflejo miotático y la energía elástica del tendón de Aquiles, obligando al gastrocnemio al esfuerzo.',
     why_this_exercise: 'Asegura crecimiento real en pantorrillas.',
     ranking_tier: 'A',
@@ -726,39 +726,39 @@ export const ALTERNATIVES_MAP: Record<string, { altId: string; reason: string }[
 
 export const WARMUP_MOBILITY_ASSETS = {
   arm_circles: {
-    title: 'Círculos de brazos & dislocaciones',
-    desc: '15 reps amplias y controladas hacia adelante y atrás para irrigar el manguito rotador.',
-    gif: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/1368.gif',
-    cue: 'Mantén los codos rectos y haz el círculo lo más amplio posible sin arquear la espalda.'
+    title: 'Apertura Dinámica de Pecho y Hombros',
+    desc: 'Apertura amplia de brazos hacia atrás y adelante para activar el pectoral y deltoides anterior con máxima irrigación.',
+    gif: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/1271.gif',
+    cue: 'Abre los brazos en cruz sintiendo cómo se expande la caja torácica de forma rítmica y controlada.'
   },
   scapular_retractions: {
-    title: 'Retracciones escapulares en pared o banco',
-    desc: '10 repeticiones apretando escápulas sin encoger hombros.',
-    gif: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/0327.gif',
-    cue: 'Imagina sujetar un lápiz entre tus omóplatos durante 1 segundo.'
+    title: 'Retracciones Escapulares en Plancha (Scapula Push-ups)',
+    desc: 'En posición de plancha, junta y separa los omóplatos sin flexionar los codos para activar el serrato anterior y trapecio.',
+    gif: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/3021.gif',
+    cue: 'Brazos completamente rectos. El movimiento nace exclusivamente del deslizamiento de las escápulas.'
   },
   thoracic_rotation: {
-    title: 'Rotación torácica dinámica',
-    desc: '8 aperturas por lado para liberar la columna dorsal antes de los empujes y tracciones.',
-    gif: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/0464.gif',
-    cue: 'Gira el pecho hacia el techo siguiendo la mano con la mirada.'
+    title: 'Rotación Torácica Dinámica (World’s Greatest Stretch)',
+    desc: 'En zancada baja, apoya una mano en el suelo y gira el torso abriendo el brazo contrario hacia el techo.',
+    gif: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/1604.gif',
+    cue: 'Gira el pecho siguiendo tu mano con la mirada para rotar desde la columna torácica, no lumbar.'
   },
   ankle_mobility: {
-    title: 'Movilidad de tobillo contra pared',
-    desc: '12 empujes de rodilla hacia adelante manteniendo el talón clavado al piso.',
-    gif: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/1370.gif',
-    cue: 'Avanza la rodilla hacia la pared sin despegar el talón del suelo.'
+    title: 'Movilidad de Tobillo y Pantorrilla en Pared (Dorsiflexión)',
+    desc: 'Manos en la pared, empuja la rodilla hacia adelante sin despegar el talón del suelo para desbloquear el tobillo.',
+    gif: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/1407.gif',
+    cue: 'Talón clavado al piso como si tuviera pegamento mientras la rodilla avanza hacia la pared.'
   },
   hip_90_90: {
-    title: 'Aperturas de cadera en 90/90',
-    desc: '8 transiciones suaves de lado a lado para desbloquear rotación interna y externa.',
-    gif: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/1512.gif',
-    cue: 'Ambas piernas dobladas en 90°, cambia de lado con la espalda erguida.'
+    title: 'Apertura Profunda de Cadera y Aductores (Frog Stretch)',
+    desc: 'En cuadrupedia con rodillas separadas, balancea la cadera suavemente hacia atrás sintiendo los aductores.',
+    gif: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/2571.gif',
+    cue: 'Abre las rodillas a una anchura cómoda y lleva los glúteos hacia los talones con suavidad.'
   },
   goblet_squat_hold: {
-    title: 'Sentadilla corporal isométrica (Deep Squat Hold)',
-    desc: '10 segundos en la posición profunda abriendo rodillas con los codos.',
-    gif: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/0291.gif',
-    cue: 'Baja profundo, empuja las rodillas hacia afuera con los codos y mantén el pecho alto.'
+    title: 'Sentadilla Profunda Isométrica (Deep Squat Hold)',
+    desc: 'Mantén la posición profunda de sentadilla con el pecho erguido y las rodillas abiertas hacia afuera.',
+    gif: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/3119.gif',
+    cue: 'Talones en el piso, pecho alto y abre las rodillas en la misma línea de la punta de los pies.'
   }
 };

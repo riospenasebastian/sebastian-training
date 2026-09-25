@@ -27,7 +27,8 @@ import {
   X,
   Target,
   Minimize2,
-  Maximize2
+  Maximize2,
+  Film
 } from 'lucide-react';
 import MuscleMap from '../components/MuscleMap';
 import RestTimer from '../components/RestTimer';
@@ -35,6 +36,7 @@ import ExerciseVideoModal from '../components/ExerciseVideoModal';
 import ExerciseFeedbackModal from '../components/ExerciseFeedbackModal';
 import ExerciseSubstitutionModal from '../components/ExerciseSubstitutionModal';
 import { ALTERNATIVES_MAP, DEFAULT_EXERCISES } from '../lib/data-defaults';
+import { getVisualStepsForExercise } from '../lib/exercise-steps';
 import confetti from 'canvas-confetti';
 
 interface WorkoutViewProps {
@@ -96,6 +98,7 @@ export default function WorkoutView({
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
   const [isSubModalOpen, setIsSubModalOpen] = useState(false);
+  const [showVisualGuide, setShowVisualGuide] = useState(true);
 
   // New PR notifications
   const [unlockedPRs, setUnlockedPRs] = useState<PersonalRecord[]>([]);
@@ -422,7 +425,7 @@ export default function WorkoutView({
                 Ejercicio {currentExIndex + 1} de {exercisesList.length}
               </span>
             </div>
-            <h2 className="text-lg font-black text-white tracking-tight leading-tight">
+            <h2 className="text-xl font-black text-white tracking-tight leading-tight">
               {currentEx.name}
             </h2>
             <p className="text-xs text-slate-400 capitalize mt-0.5">
@@ -430,46 +433,132 @@ export default function WorkoutView({
             </p>
           </div>
 
-          {/* Direct Exercise Animated GIF Preview */}
-          {currentEx.gif_url && (
-            <div
-              onClick={() => setIsVideoModalOpen(true)}
-              className="w-20 h-20 rounded-2xl overflow-hidden bg-slate-950 border border-cyan-500/40 shadow-lg relative cursor-pointer group shrink-0"
-              title="Toca para ver en grande y video"
+          <div className="flex items-center gap-1.5 shrink-0">
+            <button
+              onClick={() => setIsSubModalOpen(true)}
+              className="py-1.5 px-2.5 rounded-xl bg-slate-900 border border-slate-700/80 text-slate-300 hover:text-white flex items-center gap-1 text-[11px] font-semibold active:scale-95 transition-all shadow-sm"
+              title="Cambiar por otro ejercicio equivalente"
             >
-              <img
-                src={currentEx.gif_url}
-                alt={currentEx.name}
-                className="w-full h-full object-contain p-1 group-hover:scale-105 transition-transform"
-                loading="eager"
-              />
-              <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent flex items-end justify-center pb-1">
-                <span className="text-[8px] font-bold px-1.5 py-0.2 bg-black/70 text-cyan-300 rounded">
-                  GIF Técnica
+              <RefreshCw className="w-3 h-3 text-cyan-400" />
+              <span>Sustituir</span>
+            </button>
+            <button
+              onClick={() => setIsVideoModalOpen(true)}
+              className="py-1.5 px-2.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/20 flex items-center gap-1 text-[11px] font-bold active:scale-95 transition-all shadow-sm"
+              title="Ver biomecánica detallada y músculos"
+            >
+              <Video className="w-3 h-3" />
+              <span>Detalles</span>
+            </button>
+          </div>
+        </div>
+
+        {/* PROMINENT DIRECT VISUAL GUIDE & 1-2-3-4 STEP BREAKDOWN */}
+        {showVisualGuide ? (
+          <div className="rounded-2xl border border-cyan-500/30 bg-[#090d16] p-3 space-y-3 shadow-inner">
+            {/* Guide Header with Toggle */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="flex h-2 w-2 relative">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+                </span>
+                <span className="text-[11px] font-black text-cyan-300 tracking-wider uppercase">
+                  Animación y Técnica en Vivo
                 </span>
               </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setIsVideoModalOpen(true)}
+                  className="text-[10px] font-bold text-slate-400 hover:text-cyan-400 flex items-center gap-1 transition-colors"
+                >
+                  <Maximize2 className="w-3 h-3" />
+                  <span>Ampliar</span>
+                </button>
+                <button
+                  onClick={() => setShowVisualGuide(false)}
+                  className="text-[10px] font-bold text-slate-400 hover:text-white px-1.5 py-0.5 rounded bg-slate-800 transition-colors"
+                  title="Ocultar para compactar"
+                >
+                  Minimizar
+                </button>
+              </div>
             </div>
-          )}
-        </div>
 
-        {/* Buttons to view details */}
-        <div className="flex gap-2 pt-1">
-          <button
-            onClick={() => setIsVideoModalOpen(true)}
-            className="flex-1 py-2 px-3 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/20 flex items-center justify-center gap-1.5 text-xs font-bold active:scale-95 transition-all"
-          >
-            <Video className="w-4 h-4" />
-            <span>Ver Técnica Completa (GIF / Video)</span>
-          </button>
+            {/* Prominent Looping GIF Display */}
+            {currentEx.gif_url && (
+              <div
+                onClick={() => setIsVideoModalOpen(true)}
+                className="relative w-full h-44 sm:h-52 rounded-xl overflow-hidden bg-slate-950 border border-cyan-500/20 flex items-center justify-center cursor-pointer group"
+                title="Toca para ver en pantalla completa"
+              >
+                <img
+                  src={currentEx.gif_url}
+                  alt={currentEx.name}
+                  className="w-full h-full object-contain p-1 group-hover:scale-105 transition-transform duration-300"
+                  loading="eager"
+                />
+                <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-black/75 backdrop-blur-sm border border-cyan-500/40 text-[9px] font-bold text-cyan-300 flex items-center gap-1 pointer-events-none">
+                  <Film className="w-2.5 h-2.5 text-cyan-400 animate-pulse" />
+                  <span>Loop continuo</span>
+                </div>
+                <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded-lg bg-black/80 backdrop-blur-sm border border-slate-700 text-[10px] font-semibold text-slate-300 group-hover:text-cyan-300 flex items-center gap-1 transition-colors">
+                  <Video className="w-3 h-3 text-cyan-400" />
+                  <span>Toca para expandir</span>
+                </div>
+              </div>
+            )}
 
+            {/* 1 - 2 - 3 - 4 Visual Steps Breakdown */}
+            <div className="space-y-1.5">
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                Pasos de Ejecución Visual:
+              </span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {getVisualStepsForExercise(currentEx.id, {
+                  setup: currentEx.setup,
+                  execution: currentEx.execution,
+                  cues: currentEx.cues
+                }).map((step) => (
+                  <div
+                    key={step.step}
+                    className="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800/90 flex items-start gap-2 shadow-sm"
+                  >
+                    <span className="w-5 h-5 rounded-full bg-cyan-500/20 border border-cyan-500/40 text-cyan-400 font-black text-[11px] flex items-center justify-center shrink-0 mt-0.5">
+                      {step.step}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <span className="text-[11px] font-bold text-white block leading-tight">
+                        {step.title}
+                      </span>
+                      <p className="text-[11px] text-slate-300 leading-snug mt-0.5">
+                        {step.instruction}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Key Cue Highlight */}
+            {currentEx.cues && (
+              <div className="p-2 rounded-xl bg-cyan-950/30 border border-cyan-500/20 text-[11px] text-cyan-200 flex items-start gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-cyan-400 shrink-0 mt-0.5" />
+                <span>
+                  <strong>Clave mental:</strong> {currentEx.cues}
+                </span>
+              </div>
+            )}
+          </div>
+        ) : (
           <button
-            onClick={() => setIsSubModalOpen(true)}
-            className="py-2 px-3 rounded-xl bg-slate-900 border border-slate-700/80 text-slate-300 hover:text-white flex items-center justify-center gap-1.5 text-xs font-semibold active:scale-95 transition-all"
+            onClick={() => setShowVisualGuide(true)}
+            className="w-full py-2 px-3 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/20 flex items-center justify-center gap-2 text-xs font-bold transition-all shadow-sm"
           >
-            <RefreshCw className="w-3.5 h-3.5 text-cyan-400" />
-            <span>Sustituir</span>
+            <Film className="w-4 h-4" />
+            <span>Mostrar Guía Visual & Animación Técnica (1-2-3-4)</span>
           </button>
-        </div>
+        )}
 
         {/* Double Progression Goal Helper */}
         <div className="p-3 rounded-2xl bg-gradient-to-r from-slate-900 to-[#121828] border border-cyan-500/20 space-y-1">

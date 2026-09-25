@@ -67,7 +67,26 @@ export async function getExercises(): Promise<Exercise[]> {
   try {
     const { data, error } = await supabase.from('exercises').select('*');
     if (data && data.length > 0 && !error) {
-      return data;
+      return data.map((dbEx: any) => {
+        const defaultEx = DEFAULT_EXERCISES.find((d) => d.id === dbEx.id);
+        return {
+          ...defaultEx,
+          ...dbEx,
+          gif_url: dbEx.gif_url || defaultEx?.gif_url || '',
+          instructions: dbEx.instructions || defaultEx?.instructions || '',
+          setup: dbEx.setup || defaultEx?.setup || '',
+          execution: dbEx.execution || defaultEx?.execution || '',
+          cues: dbEx.cues || defaultEx?.cues || '',
+          common_errors: dbEx.common_errors || defaultEx?.common_errors || '',
+          how_it_should_feel: dbEx.how_it_should_feel || defaultEx?.how_it_should_feel || '',
+          video_url: dbEx.video_url || defaultEx?.video_url || '',
+          scientific_note: dbEx.scientific_note || defaultEx?.scientific_note || '',
+          why_this_exercise: dbEx.why_this_exercise || defaultEx?.why_this_exercise || '',
+          ranking_tier: dbEx.ranking_tier || defaultEx?.ranking_tier || 'A',
+          primary_muscles: dbEx.primary_muscles || defaultEx?.primary_muscles || [],
+          secondary_muscles: dbEx.secondary_muscles || defaultEx?.secondary_muscles || []
+        };
+      });
     }
   } catch (e) {
     console.warn('Loading default exercises', e);
@@ -82,10 +101,30 @@ export async function getTemplates(): Promise<WorkoutTemplate[]> {
     const { data: templateExercises } = await supabase.from('workout_template_exercises').select('*, exercise:exercises(*)').order('order_index');
 
     if (templates && templates.length > 0) {
-      return templates.map(t => ({
-        ...t,
-        exercises: (templateExercises || []).filter(te => te.template_id === t.id)
-      }));
+      return templates.map(t => {
+        const defaultT = DEFAULT_TEMPLATES.find(dt => dt.code === t.code || dt.id === t.id);
+        const mappedTE = (templateExercises || [])
+          .filter(te => te.template_id === t.id)
+          .map(te => {
+            const defaultEx = DEFAULT_EXERCISES.find(d => d.id === te.exercise_id);
+            const defaultTE = defaultT?.exercises?.find(dte => dte.exercise_id === te.exercise_id);
+            return {
+              ...defaultTE,
+              ...te,
+              exercise: {
+                ...defaultEx,
+                ...te.exercise,
+                gif_url: te.exercise?.gif_url || defaultEx?.gif_url || ''
+              }
+            };
+          });
+
+        return {
+          ...defaultT,
+          ...t,
+          exercises: mappedTE.length > 0 ? mappedTE : defaultT?.exercises
+        };
+      });
     }
   } catch (e) {
     console.warn('Loading default templates', e);

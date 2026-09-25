@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Exercise } from '../lib/types';
 import { X, ExternalLink, Sparkles, AlertCircle, HeartHandshake, Info, Play, Film, Layers } from 'lucide-react';
 import MuscleMap from './MuscleMap';
+import { getVisualStepsForExercise } from '../lib/exercise-steps';
 
 interface ExerciseVideoModalProps {
   exercise: Exercise;
@@ -22,11 +23,11 @@ export default function ExerciseVideoModal({
 
   if (!isOpen) return null;
 
-  // Extract YouTube ID if present
+  // Extract YouTube ID if present (add start timestamp to skip talking intro)
   let embedUrl = '';
   if (exercise.video_url && exercise.video_url.includes('watch?v=')) {
     const videoId = exercise.video_url.split('watch?v=')[1]?.split('&')[0];
-    if (videoId) embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=0&rel=0`;
+    if (videoId) embedUrl = `https://www.youtube.com/embed/${videoId}?start=30&autoplay=0&rel=0`;
   }
 
   return (
@@ -91,24 +92,56 @@ export default function ExerciseVideoModal({
         <div className="p-5 overflow-y-auto space-y-4 flex-1">
           {/* MEDIA DISPLAY */}
           {activeMediaTab === 'gif' && (
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center space-y-4">
               {exercise.gif_url ? (
-                <div className="w-full max-w-[280px] aspect-square rounded-2xl overflow-hidden bg-slate-950 border border-cyan-500/30 shadow-lg relative flex items-center justify-center">
+                <div className="w-full max-w-[320px] aspect-square rounded-2xl overflow-hidden bg-slate-950 border border-cyan-500/30 shadow-xl relative flex items-center justify-center">
                   <img
                     src={exercise.gif_url}
                     alt={exercise.name}
                     className="w-full h-full object-contain p-2"
                     loading="eager"
                   />
-                  <span className="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-black/70 text-[9px] text-cyan-300 font-mono">
-                    Loop continuo
-                  </span>
+                  <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-black/80 backdrop-blur-sm border border-cyan-500/40 text-[9px] font-bold text-cyan-300 flex items-center gap-1">
+                    <Film className="w-2.5 h-2.5 text-cyan-400 animate-pulse" />
+                    <span>Loop continuo</span>
+                  </div>
                 </div>
               ) : (
                 <div className="w-full aspect-video rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400 text-xs">
                   Animación próximamente disponible
                 </div>
               )}
+
+              {/* 1 - 2 - 3 - 4 Visual Steps directly below GIF */}
+              <div className="w-full space-y-2">
+                <span className="text-xs font-black text-white tracking-wide uppercase block">
+                  Pasos de Técnica Visual (1-2-3-4):
+                </span>
+                <div className="grid grid-cols-1 gap-2">
+                  {getVisualStepsForExercise(exercise.id, {
+                    setup: exercise.setup,
+                    execution: exercise.execution,
+                    cues: exercise.cues
+                  }).map((step) => (
+                    <div
+                      key={step.step}
+                      className="p-3 rounded-xl bg-slate-900/90 border border-slate-800 flex items-start gap-2.5 shadow-sm"
+                    >
+                      <span className="w-6 h-6 rounded-full bg-cyan-500/20 border border-cyan-500/40 text-cyan-400 font-black text-xs flex items-center justify-center shrink-0 mt-0.5">
+                        {step.step}
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <h5 className="text-xs font-bold text-white leading-tight">
+                          {step.title}
+                        </h5>
+                        <p className="text-xs text-slate-300 leading-snug mt-0.5">
+                          {step.instruction}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           )}
 

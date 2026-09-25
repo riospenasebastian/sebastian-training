@@ -227,13 +227,16 @@ export default function WarmupModal({
                     {/* Expanded Visual & GIF */}
                     {isExpanded && (
                       <div className="px-4 pb-4 pt-1 border-t border-slate-800 space-y-3">
-                        <div className="flex justify-center bg-slate-950 rounded-2xl p-2 border border-slate-800/80">
+                        <div className="flex flex-col items-center justify-center bg-slate-950 rounded-2xl p-2 border border-cyan-500/20 shadow-inner relative">
                           <img
                             src={item.gif}
                             alt={item.title}
-                            className="w-36 h-36 object-contain rounded-xl"
+                            className="w-48 h-48 sm:w-56 sm:h-56 object-contain rounded-xl"
                             loading="eager"
                           />
+                          <span className="absolute bottom-2 right-2 px-2 py-0.5 rounded-full bg-black/75 backdrop-blur-sm border border-cyan-500/30 text-[9px] text-cyan-300 font-bold">
+                            🔄 Animación en bucle
+                          </span>
                         </div>
 
                         <p className="text-xs text-slate-300 leading-relaxed">{item.desc}</p>
