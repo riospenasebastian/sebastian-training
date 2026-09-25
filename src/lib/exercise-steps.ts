@@ -29,6 +29,12 @@ export const EXERCISE_VISUAL_STEPS: Record<string, ExerciseVisualStep[]> = {
     { step: 3, title: 'Pico a la Altura del Hombro', instruction: 'Detente exactamente cuando el codo esté paralelo al suelo. No es necesario subir más alto.' },
     { step: 4, title: 'Descenso Excéntrico', instruction: 'Baja en 3 segundos resistiendo la tensión constante del cable, que mantiene el deltoides lateral trabajando en todo el rango.' }
   ],
+  elevaciones_laterales_mancuernas: [
+    { step: 1, title: 'Posición Inicial', instruction: 'De pie (o sentado en banco), mancuernas a los lados, torso inclinado 10-15° al frente y codos con microflexión fija.' },
+    { step: 2, title: 'Elevación Escapular', instruction: 'Eleva los brazos en el plano escapular (30° adelantado respecto al torso) pensando en empujar las paredes laterales con los codos.' },
+    { step: 3, title: 'Altura de Hombros', instruction: 'Detén el movimiento exactamente cuando los codos lleguen a la altura del hombro (paralelos al suelo), sin encoger trapecios.' },
+    { step: 4, title: 'Descenso Resistido', instruction: 'Baja en 3 segundos resistiendo el peso con el hombro lateral hasta la vertical antes de la siguiente repetición.' }
+  ],
   curl_biceps_inclinado: [
     { step: 1, title: 'Posición Inicial', instruction: 'Banco inclinado a unos 60°. Siéntate apoyando la espalda y deja que los brazos cuelguen verticalmente detrás del torso.' },
     { step: 2, title: 'Flexión con Supinación', instruction: 'Inicia la flexión de codo girando progresivamente las palmas hacia el techo sin adelantar los codos.' },

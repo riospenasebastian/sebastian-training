@@ -35,6 +35,7 @@ import RestTimer from '../components/RestTimer';
 import ExerciseVideoModal from '../components/ExerciseVideoModal';
 import ExerciseFeedbackModal from '../components/ExerciseFeedbackModal';
 import ExerciseSubstitutionModal from '../components/ExerciseSubstitutionModal';
+import AddExerciseModal from '../components/AddExerciseModal';
 import { ALTERNATIVES_MAP, DEFAULT_EXERCISES } from '../lib/data-defaults';
 import { getVisualStepsForExercise } from '../lib/exercise-steps';
 import confetti from 'canvas-confetti';
@@ -98,7 +99,9 @@ export default function WorkoutView({
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
   const [isSubModalOpen, setIsSubModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [showVisualGuide, setShowVisualGuide] = useState(true);
+  const [lateralRaiseVariant, setLateralRaiseVariant] = useState<'polea' | 'mancuernas'>('polea');
 
   // New PR notifications
   const [unlockedPRs, setUnlockedPRs] = useState<PersonalRecord[]>([]);
@@ -272,6 +275,55 @@ export default function WorkoutView({
     });
   };
 
+  const handleAddExerciseToSession = (exercise: Exercise) => {
+    const newTe: WorkoutTemplateExercise = {
+      id: `custom_${crypto.randomUUID()}`,
+      template_id: template.id,
+      exercise_id: exercise.id,
+      order_index: exercisesList.length + 1,
+      target_sets: 3,
+      target_reps_min: exercise.rep_range_min || 8,
+      target_reps_max: exercise.rep_range_max || 12,
+      target_rir: exercise.default_rir || 2,
+      target_rest_sec: exercise.default_rest_sec || 90,
+      priority: 'medium',
+      warmup_feeder_sets: 0,
+    };
+
+    const previousSets = getPreviousSessionSets(exercise.id);
+    const defaultWeight = previousSets.length > 0 ? previousSets[0].weight_kg : 15;
+
+    const initialSets: WorkoutSetRecord[] = Array.from({ length: 3 }).map((_, i) => ({
+      id: crypto.randomUUID(),
+      workout_exercise_id: '',
+      set_number: i + 1,
+      is_warmup: false,
+      weight_kg: previousSets[i]?.weight_kg || defaultWeight,
+      reps: previousSets[i]?.reps || exercise.rep_range_min || 10,
+      rir: exercise.default_rir || 2,
+      completed: false,
+    }));
+
+    const newItem = {
+      templateExercise: newTe,
+      exercise: exercise,
+      sets: initialSets,
+    };
+
+    setExercisesList((prev) => {
+      const next = [...prev, newItem];
+      onSaveState?.({
+        currentExIndex: next.length - 1,
+        elapsedSeconds,
+        isPaused,
+        exercisesList: next,
+      });
+      return next;
+    });
+
+    setCurrentExIndex(exercisesList.length);
+  };
+
   const handleNextExercise = () => {
     // Open feedback modal before advancing
     setIsFeedbackModalOpen(true);
@@ -411,6 +463,17 @@ export default function WorkoutView({
             </button>
           );
         })}
+
+        {/* Add exercise button in stepper */}
+        <button
+          type="button"
+          onClick={() => setIsAddModalOpen(true)}
+          className="px-2.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap flex items-center gap-1 bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/20 active:scale-95 transition-all shadow-sm"
+          title="Añadir ejercicio extra si tienes más tiempo hoy"
+        >
+          <Plus className="w-3.5 h-3.5" />
+          <span>+ Ejercicio</span>
+        </button>
       </div>
 
       {/* ULTRA-VISUAL Exercise Header Card */}
@@ -486,6 +549,35 @@ export default function WorkoutView({
             </div>
 
             {/* Prominent Looping GIF Display */}
+            {/* If lateral raises, allow toggling between cable and dumbbell */}
+            {currentEx.id === 'elevaciones_laterales_polea' && (
+              <div className="flex items-center gap-2 p-1.5 rounded-xl bg-slate-900 border border-cyan-500/30 text-xs">
+                <span className="text-[10px] font-bold text-slate-400 pl-1 shrink-0">Modalidad:</span>
+                <button
+                  type="button"
+                  onClick={() => setLateralRaiseVariant('polea')}
+                  className={`flex-1 py-1.5 px-2 rounded-lg font-bold text-[11px] transition-all ${
+                    lateralRaiseVariant === 'polea'
+                      ? 'bg-cyan-500 text-slate-950 shadow-sm'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  ⚡ En Polea
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLateralRaiseVariant('mancuernas')}
+                  className={`flex-1 py-1.5 px-2 rounded-lg font-bold text-[11px] transition-all ${
+                    lateralRaiseVariant === 'mancuernas'
+                      ? 'bg-cyan-500 text-slate-950 shadow-sm'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  🏋️ Con Mancuernas
+                </button>
+              </div>
+            )}
+
             {currentEx.gif_url && (
               <div
                 onClick={() => setIsVideoModalOpen(true)}
@@ -493,14 +585,26 @@ export default function WorkoutView({
                 title="Toca para ver en pantalla completa"
               >
                 <img
-                  src={currentEx.gif_url}
-                  alt={currentEx.name}
+                  src={
+                    currentEx.id === 'elevaciones_laterales_polea' && lateralRaiseVariant === 'mancuernas'
+                      ? 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/0334.gif'
+                      : currentEx.gif_url
+                  }
+                  alt={
+                    currentEx.id === 'elevaciones_laterales_polea' && lateralRaiseVariant === 'mancuernas'
+                      ? 'Elevaciones Laterales con Mancuernas'
+                      : currentEx.name
+                  }
                   className="w-full h-full object-contain p-1 group-hover:scale-105 transition-transform duration-300"
                   loading="eager"
                 />
                 <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-black/75 backdrop-blur-sm border border-cyan-500/40 text-[9px] font-bold text-cyan-300 flex items-center gap-1 pointer-events-none">
                   <Film className="w-2.5 h-2.5 text-cyan-400 animate-pulse" />
-                  <span>Loop continuo</span>
+                  <span>
+                    {currentEx.id === 'elevaciones_laterales_polea' && lateralRaiseVariant === 'mancuernas'
+                      ? 'Mancuernas en bucle'
+                      : 'Loop continuo'}
+                  </span>
                 </div>
                 <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded-lg bg-black/80 backdrop-blur-sm border border-slate-700 text-[10px] font-semibold text-slate-300 group-hover:text-cyan-300 flex items-center gap-1 transition-colors">
                   <Video className="w-3 h-3 text-cyan-400" />
@@ -515,11 +619,16 @@ export default function WorkoutView({
                 Pasos de Ejecución Visual:
               </span>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {getVisualStepsForExercise(currentEx.id, {
-                  setup: currentEx.setup,
-                  execution: currentEx.execution,
-                  cues: currentEx.cues
-                }).map((step) => (
+                {getVisualStepsForExercise(
+                  currentEx.id === 'elevaciones_laterales_polea' && lateralRaiseVariant === 'mancuernas'
+                    ? 'elevaciones_laterales_mancuernas'
+                    : currentEx.id,
+                  {
+                    setup: currentEx.setup,
+                    execution: currentEx.execution,
+                    cues: currentEx.cues
+                  }
+                ).map((step) => (
                   <div
                     key={step.step}
                     className="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800/90 flex items-start gap-2 shadow-sm"
@@ -764,6 +873,40 @@ export default function WorkoutView({
             </div>
           );
         })}
+
+        {/* Add Set Button */}
+        <button
+          type="button"
+          onClick={() => {
+            setExercisesList((prev) => {
+              const next = [...prev];
+              const exItem = next[currentExIndex];
+              const lastSet = exItem.sets[exItem.sets.length - 1];
+              const newSet: WorkoutSetRecord = {
+                id: crypto.randomUUID(),
+                workout_exercise_id: '',
+                set_number: exItem.sets.length + 1,
+                is_warmup: false,
+                weight_kg: lastSet ? lastSet.weight_kg : 15,
+                reps: lastSet ? lastSet.reps : 10,
+                rir: 2,
+                completed: false,
+              };
+              exItem.sets = [...exItem.sets, newSet];
+              onSaveState?.({
+                currentExIndex,
+                elapsedSeconds,
+                isPaused,
+                exercisesList: next,
+              });
+              return next;
+            });
+          }}
+          className="w-full py-2 px-3 rounded-xl border border-dashed border-cyan-500/30 bg-cyan-950/20 text-cyan-400 hover:bg-cyan-500/10 font-bold text-xs flex items-center justify-center gap-1.5 transition-all"
+        >
+          <Plus className="w-4 h-4" />
+          <span>+ Añadir Otra Serie a este Ejercicio (Volumen Extra)</span>
+        </button>
       </div>
 
       {/* Footer Navigation & Actions */}
@@ -776,7 +919,18 @@ export default function WorkoutView({
             className="flex-1 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs font-semibold text-slate-300 hover:text-cyan-400 flex items-center justify-center gap-1.5 transition-all"
           >
             <RefreshCw className="w-3.5 h-3.5" />
-            <span>Sustituir Ejercicio</span>
+            <span>Sustituir</span>
+          </button>
+
+          {/* Add extra exercise button */}
+          <button
+            type="button"
+            onClick={() => setIsAddModalOpen(true)}
+            className="py-2.5 px-3 rounded-xl bg-slate-900 border border-slate-800 text-xs font-semibold text-cyan-400 hover:bg-slate-800 flex items-center gap-1.5 transition-all"
+            title="Añadir ejercicio extra si tienes 1.5 - 2 horas hoy"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>+ Ejercicio</span>
           </button>
 
           {/* Trigger rest timer manually */}
@@ -845,6 +999,16 @@ export default function WorkoutView({
         isOpen={isSubModalOpen}
         onClose={() => setIsSubModalOpen(false)}
         onSelectAlternative={handleSubstituteExercise}
+        originalExerciseId={currentItem.templateExercise.exercise_id}
+        activeExerciseIdsInSession={exercisesList.map((item) => item.exercise.id)}
+      />
+
+      <AddExerciseModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        allExercises={allExercises}
+        existingExerciseIds={exercisesList.map((item) => item.exercise.id)}
+        onAddExercise={handleAddExerciseToSession}
       />
     </div>
   );

@@ -11,6 +11,8 @@ interface ExerciseSubstitutionModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSelectAlternative: (newExerciseId: string) => void;
+  originalExerciseId?: string;
+  activeExerciseIdsInSession?: string[];
 }
 
 export default function ExerciseSubstitutionModal({
@@ -19,14 +21,31 @@ export default function ExerciseSubstitutionModal({
   isOpen,
   onClose,
   onSelectAlternative,
+  originalExerciseId,
+  activeExerciseIdsInSession = [],
 }: ExerciseSubstitutionModalProps) {
   if (!isOpen) return null;
 
-  const directAlts = ALTERNATIVES_MAP[currentExercise.id] || [];
+  // Check if current exercise is a substitution from the template original
+  const isSubstituted = originalExerciseId && originalExerciseId !== currentExercise.id;
+  const originalEx = isSubstituted ? allExercises.find((e) => e.id === originalExerciseId) : null;
+
+  // Filter helper: never offer an exercise that is ALREADY in another slot of this workout
+  const isConflict = (id: string) => {
+    // If it's the original template exercise, allow restoring it
+    if (id === originalExerciseId) return false;
+    return activeExerciseIdsInSession.includes(id) && id !== currentExercise.id;
+  };
+
+  const rawDirectAlts = ALTERNATIVES_MAP[currentExercise.id] || [];
+  const directAlts = rawDirectAlts.filter((alt) => !isConflict(alt.altId));
 
   // Find same movement pattern exercises
   const patternAlts = allExercises.filter(
-    (e) => e.id !== currentExercise.id && e.movement_pattern === currentExercise.movement_pattern
+    (e) =>
+      e.id !== currentExercise.id &&
+      e.movement_pattern === currentExercise.movement_pattern &&
+      !isConflict(e.id)
   );
 
   // Find same primary muscle group exercises
@@ -34,7 +53,9 @@ export default function ExerciseSubstitutionModal({
     (e) =>
       e.id !== currentExercise.id &&
       e.primary_muscle_group === currentExercise.primary_muscle_group &&
-      !patternAlts.some((p) => p.id === e.id)
+      !patternAlts.some((p) => p.id === e.id) &&
+      !directAlts.some((d) => d.altId === e.id) &&
+      !isConflict(e.id)
   );
 
   return (
@@ -56,11 +77,42 @@ export default function ExerciseSubstitutionModal({
 
         {/* Content list */}
         <div className="p-4 overflow-y-auto space-y-4 flex-1">
+          {/* RESTORE ORIGINAL EXERCISE CARD (If currently substituted) */}
+          {originalEx && (
+            <div className="p-3.5 rounded-2xl bg-gradient-to-r from-cyan-950/80 to-slate-900 border border-cyan-500/40 flex items-center justify-between shadow-lg">
+              <div className="flex items-center gap-3 min-w-0">
+                {originalEx.gif_url && (
+                  <img
+                    src={originalEx.gif_url}
+                    alt={originalEx.name}
+                    className="w-12 h-12 rounded-xl object-contain bg-slate-950 p-1 border border-cyan-500/30 shrink-0"
+                  />
+                )}
+                <div className="min-w-0">
+                  <span className="text-[10px] font-black text-cyan-400 uppercase tracking-wider block">
+                    Ejercicio Original de la Rutina
+                  </span>
+                  <h4 className="text-xs font-bold text-white truncate">{originalEx.name}</h4>
+                  <span className="text-[10px] text-slate-400">Toca para volver a la rutina base</span>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  onSelectAlternative(originalEx.id);
+                  onClose();
+                }}
+                className="px-3.5 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black text-xs active:scale-95 transition-all shadow-md shrink-0 ml-2"
+              >
+                Restaurar
+              </button>
+            </div>
+          )}
+
           {/* Direct Recommended Alternatives */}
           {directAlts.length > 0 && (
             <div className="space-y-2">
               <span className="text-[11px] font-bold uppercase tracking-wider text-cyan-400 block">
-                Alternativa Directa Recomendada
+                Alternativas Directas Recomendadas
               </span>
               {directAlts.map((alt) => {
                 const altEx = allExercises.find((e) => e.id === alt.altId);
@@ -74,20 +126,20 @@ export default function ExerciseSubstitutionModal({
                     }}
                     className="w-full p-3 rounded-2xl bg-cyan-950/30 border border-cyan-500/30 hover:border-cyan-400 flex items-center justify-between text-left group transition-all"
                   >
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
                       {altEx.gif_url && (
                         <img
                           src={altEx.gif_url}
                           alt={altEx.name}
-                          className="w-12 h-12 rounded-xl object-contain bg-slate-950 p-1 border border-slate-800"
+                          className="w-12 h-12 rounded-xl object-contain bg-slate-950 p-1 border border-slate-800 shrink-0"
                         />
                       )}
-                      <div>
+                      <div className="min-w-0">
                         <div className="flex items-center gap-1.5 mb-0.5">
-                          <span className="text-xs font-bold text-white group-hover:text-cyan-300">
+                          <span className="text-xs font-bold text-white group-hover:text-cyan-300 truncate">
                             {altEx.name}
                           </span>
-                          <span className="px-1.5 py-0.2 rounded text-[9px] font-black bg-cyan-500/20 text-cyan-400">
+                          <span className="px-1.5 py-0.2 rounded text-[9px] font-black bg-cyan-500/20 text-cyan-400 shrink-0">
                             Tier {altEx.ranking_tier}
                           </span>
                         </div>
@@ -116,16 +168,16 @@ export default function ExerciseSubstitutionModal({
                   }}
                   className="w-full p-3 rounded-2xl bg-slate-900 border border-slate-800 hover:border-slate-700 flex items-center justify-between text-left group transition-all"
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
                     {ex.gif_url && (
                       <img
                         src={ex.gif_url}
                         alt={ex.name}
-                        className="w-11 h-11 rounded-xl object-contain bg-slate-950 p-1 border border-slate-800"
+                        className="w-11 h-11 rounded-xl object-contain bg-slate-950 p-1 border border-slate-800 shrink-0"
                       />
                     )}
-                    <div>
-                      <h4 className="text-xs font-bold text-white group-hover:text-cyan-300">{ex.name}</h4>
+                    <div className="min-w-0">
+                      <h4 className="text-xs font-bold text-white group-hover:text-cyan-300 truncate">{ex.name}</h4>
                       <p className="text-[10px] text-slate-400">
                         {ex.difficulty} • {ex.equipment_id}
                       </p>
@@ -141,7 +193,7 @@ export default function ExerciseSubstitutionModal({
           {sameMuscleAlts.length > 0 && (
             <div className="space-y-2">
               <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">
-                Otros para {currentExercise.primary_muscle_group}
+                Otras Opciones para {currentExercise.primary_muscle_group}
               </span>
               {sameMuscleAlts.map((ex) => (
                 <button
@@ -152,11 +204,11 @@ export default function ExerciseSubstitutionModal({
                   }}
                   className="w-full p-2.5 rounded-xl bg-slate-900/60 border border-slate-800/80 hover:border-slate-700 flex items-center justify-between text-left group transition-all"
                 >
-                  <div>
-                    <h4 className="text-xs font-semibold text-slate-300 group-hover:text-white">{ex.name}</h4>
-                    <p className="text-[10px] text-slate-500">{ex.movement_pattern}</p>
+                  <div className="min-w-0">
+                    <h4 className="text-xs font-semibold text-slate-300 group-hover:text-white truncate">{ex.name}</h4>
+                    <p className="text-[10px] text-slate-500 capitalize">{ex.movement_pattern.replace('_', ' ')}</p>
                   </div>
-                  <ArrowRight className="w-3.5 h-3.5 text-slate-600 group-hover:text-white" />
+                  <ArrowRight className="w-3.5 h-3.5 text-slate-600 group-hover:text-white shrink-0 ml-2" />
                 </button>
               ))}
             </div>

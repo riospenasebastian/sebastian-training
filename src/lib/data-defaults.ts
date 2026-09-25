@@ -726,39 +726,39 @@ export const ALTERNATIVES_MAP: Record<string, { altId: string; reason: string }[
 
 export const WARMUP_MOBILITY_ASSETS = {
   arm_circles: {
-    title: 'Apertura Dinámica de Pecho y Hombros',
-    desc: 'Apertura amplia de brazos hacia atrás y adelante para activar el pectoral y deltoides anterior con máxima irrigación.',
-    gif: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/1271.gif',
-    cue: 'Abre los brazos en cruz sintiendo cómo se expande la caja torácica de forma rítmica y controlada.'
+    title: 'Círculos de Pie con Mancuernas Ligeras 1-2 kg (Around the World)',
+    desc: 'De pie con mancuernas muy ligeras (1-2 kg) o sin peso. Dibuja círculos amplios controlados para lubricar manguito rotador y deltoides sin tocar el suelo.',
+    gif: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/2143.gif',
+    cue: 'Torso erguido de pie, codos con microflexión y movimiento fluido sin balancear la espalda.'
   },
   scapular_retractions: {
-    title: 'Retracciones Escapulares en Plancha (Scapula Push-ups)',
-    desc: 'En posición de plancha, junta y separa los omóplatos sin flexionar los codos para activar el serrato anterior y trapecio.',
-    gif: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/3021.gif',
-    cue: 'Brazos completamente rectos. El movimiento nace exclusivamente del deslizamiento de las escápulas.'
+    title: 'Elevaciones Frontales y en Y de Pie con Mancuernas Ligeras',
+    desc: 'De pie con mancuernas de 1-2 kg, eleva los brazos a 45° en forma de Y para activar serratos, deltoides y trapecio inferior sin tirarse al piso.',
+    gif: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/0415.gif',
+    cue: 'Movimiento suave y rítmico, activando la parte alta de la espalda sin encoger hombros.'
   },
   thoracic_rotation: {
-    title: 'Rotación Torácica Dinámica (World’s Greatest Stretch)',
-    desc: 'En zancada baja, apoya una mano en el suelo y gira el torso abriendo el brazo contrario hacia el techo.',
-    gif: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/1604.gif',
-    cue: 'Gira el pecho siguiendo tu mano con la mirada para rotar desde la columna torácica, no lumbar.'
+    title: 'Aperturas Dinámicas de Pecho y Hombros de Pie',
+    desc: 'De pie, abre los brazos en cruz hacia atrás para estirar el pectoral y deltoides anterior, y crúzalos al frente de forma dinámica.',
+    gif: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/1271.gif',
+    cue: 'Abre el pecho al inhalar y cruza los brazos suaves al frente al exhalar.'
   },
   ankle_mobility: {
-    title: 'Movilidad de Tobillo y Pantorrilla en Pared (Dorsiflexión)',
-    desc: 'Manos en la pared, empuja la rodilla hacia adelante sin despegar el talón del suelo para desbloquear el tobillo.',
+    title: 'Movilidad de Tobillo contra Pared (De Pie)',
+    desc: 'De pie frente a la pared, apoya las manos y avanza la rodilla hacia adelante manteniendo el talón completamente pegado al suelo.',
     gif: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/1407.gif',
-    cue: 'Talón clavado al piso como si tuviera pegamento mientras la rodilla avanza hacia la pared.'
+    cue: 'Talón clavado al piso como si tuviera pegamento mientras la espinilla avanza.'
   },
   hip_90_90: {
-    title: 'Apertura Profunda de Cadera y Aductores (Frog Stretch)',
-    desc: 'En cuadrupedia con rodillas separadas, balancea la cadera suavemente hacia atrás sintiendo los aductores.',
-    gif: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/2571.gif',
-    cue: 'Abre las rodillas a una anchura cómoda y lleva los glúteos hacia los talones con suavidad.'
+    title: 'Elevaciones Dinámicas de Gemelos y Tobillos de Pie',
+    desc: 'De pie con apoyo en rack o pared, eleva talones sobre el metatarso para activar pantorrillas, tendón de Aquiles y fascia plantar.',
+    gif: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/1373.gif',
+    cue: 'Sube sintiendo la contracción de la pantorrilla y baja controlando.'
   },
   goblet_squat_hold: {
-    title: 'Sentadilla Profunda Isométrica (Deep Squat Hold)',
-    desc: 'Mantén la posición profunda de sentadilla con el pecho erguido y las rodillas abiertas hacia afuera.',
-    gif: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/3119.gif',
-    cue: 'Talones en el piso, pecho alto y abre las rodillas en la misma línea de la punta de los pies.'
+    title: 'Sentadilla Profunda de Pie con Soporte o Mancuerna Ligera',
+    desc: 'De pie sosteniendo una mancuerna ligera de 4-6 kg al pecho o sujetando el rack, desciende en sentadilla profunda 10s abriendo caderas.',
+    gif: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/3132.gif',
+    cue: 'Pecho alto, talones planos y empuja suavemente las rodillas hacia afuera.'
   }
 };
