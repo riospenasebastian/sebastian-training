@@ -34,11 +34,11 @@ export default function WarmupModal({
   targetWorkingWeightKg = 20,
   firstExerciseName = 'Press Inclinado con Mancuernas',
 }: WarmupModalProps) {
-  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [step, setStep] = useState<1 | 2 | 3>(2); // Start on Step 2 (Movilidad Visual) so visual GIFs are seen immediately!
   const [cardioSeconds, setCardioSeconds] = useState(300); // 5 min
   const [isCardioRunning, setIsCardioRunning] = useState(false);
   const [mobilityChecks, setMobilityChecks] = useState<boolean[]>([false, false, false]);
-  const [expandedMobilityIdx, setExpandedMobilityIdx] = useState<number | null>(0);
+  const [expandedItems, setExpandedItems] = useState<number[]>([0, 1, 2]); // All 3 warmups open with GIFs visible!
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
@@ -54,7 +54,8 @@ export default function WarmupModal({
 
   if (!isOpen) return null;
 
-  const isUpper = template.code.startsWith('upper');
+  const isLower = template.code.includes('lower') || template.code.includes('pierna');
+  const isUpper = !isLower;
   const mobilityItems = isUpper
     ? [
         WARMUP_MOBILITY_ASSETS.arm_circles,
@@ -174,7 +175,7 @@ export default function WarmupModal({
               </div>
 
               {mobilityItems.map((item, idx) => {
-                const isExpanded = expandedMobilityIdx === idx;
+                const isExpanded = expandedItems.includes(idx);
                 const isChecked = mobilityChecks[idx];
                 return (
                   <div
@@ -189,8 +190,12 @@ export default function WarmupModal({
                   >
                     {/* Item Header */}
                     <div
-                      onClick={() => setExpandedMobilityIdx(isExpanded ? null : idx)}
-                      className="p-3.5 flex items-center justify-between cursor-pointer select-none"
+                      onClick={() =>
+                        setExpandedItems((prev) =>
+                          prev.includes(idx) ? prev.filter((i) => i !== idx) : [...prev, idx]
+                        )
+                      }
+                      className="p-3.5 flex items-center justify-between cursor-pointer select-none bg-slate-900/90"
                     >
                       <div className="flex items-center gap-3">
                         <button
@@ -212,7 +217,7 @@ export default function WarmupModal({
                         <div>
                           <h4 className="text-xs font-bold text-white">{item.title}</h4>
                           <span className="text-[10px] text-cyan-400 font-medium">
-                            {isExpanded ? 'Toca para cerrar' : 'Toca para ver animación GIF'}
+                            {isExpanded ? 'Toca para contraer' : 'Toca para ver animación GIF'}
                           </span>
                         </div>
                       </div>

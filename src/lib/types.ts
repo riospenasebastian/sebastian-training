@@ -70,7 +70,7 @@ export interface ExerciseAlternative {
 export interface WorkoutTemplate {
   id: string;
   name: string;
-  code: 'upper_a' | 'lower_a' | 'upper_b' | 'lower_b';
+  code: string;
   sequence_order: number;
   target_focus: string;
   estimated_duration_min: number;

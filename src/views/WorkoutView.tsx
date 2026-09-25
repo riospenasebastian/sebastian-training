@@ -36,6 +36,7 @@ import ExerciseVideoModal from '../components/ExerciseVideoModal';
 import ExerciseFeedbackModal from '../components/ExerciseFeedbackModal';
 import ExerciseSubstitutionModal from '../components/ExerciseSubstitutionModal';
 import AddExerciseModal from '../components/AddExerciseModal';
+import WarmupModal from '../components/WarmupModal';
 import { ALTERNATIVES_MAP, DEFAULT_EXERCISES } from '../lib/data-defaults';
 import { getVisualStepsForExercise } from '../lib/exercise-steps';
 import confetti from 'canvas-confetti';
@@ -100,6 +101,7 @@ export default function WorkoutView({
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
   const [isSubModalOpen, setIsSubModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isWarmupOpen, setIsWarmupOpen] = useState(false);
   const [showVisualGuide, setShowVisualGuide] = useState(true);
   const [lateralRaiseVariant, setLateralRaiseVariant] = useState<'polea' | 'mancuernas'>('polea');
 
@@ -439,6 +441,19 @@ export default function WorkoutView({
           <span className="text-[9px] text-slate-500 block">series</span>
         </div>
       </div>
+
+      {/* WARMUP & MOBILITY MODAL TRIGGER */}
+      <button
+        type="button"
+        onClick={() => setIsWarmupOpen(true)}
+        className="w-full py-2.5 px-3.5 rounded-2xl bg-gradient-to-r from-orange-500/15 via-amber-500/15 to-slate-900 border border-orange-500/30 text-orange-300 hover:text-white flex items-center justify-between transition-all mb-3 text-xs font-bold shadow-md active:scale-98"
+      >
+        <div className="flex items-center gap-2">
+          <Flame className="w-4 h-4 text-orange-400 shrink-0 animate-pulse" />
+          <span>🔥 Calentamiento Visual (Ver GIFs y Series de Aproximación)</span>
+        </div>
+        <ChevronRight className="w-4 h-4 text-orange-400 shrink-0" />
+      </button>
 
       {/* Exercise Navigation Tabs / Stepper */}
       <div className="flex items-center gap-1.5 overflow-x-auto pb-2 scrollbar-none mb-3">
@@ -1009,6 +1024,15 @@ export default function WorkoutView({
         allExercises={allExercises}
         existingExerciseIds={exercisesList.map((item) => item.exercise.id)}
         onAddExercise={handleAddExerciseToSession}
+      />
+
+      <WarmupModal
+        template={template}
+        isOpen={isWarmupOpen}
+        onClose={() => setIsWarmupOpen(false)}
+        onComplete={() => setIsWarmupOpen(false)}
+        targetWorkingWeightKg={exercisesList[0]?.sets[0]?.weight_kg || 20}
+        firstExerciseName={exercisesList[0]?.exercise.name || 'Primer Ejercicio'}
       />
     </div>
   );

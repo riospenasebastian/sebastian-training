@@ -67,7 +67,7 @@ export async function getExercises(): Promise<Exercise[]> {
   try {
     const { data, error } = await supabase.from('exercises').select('*');
     if (data && data.length > 0 && !error) {
-      return data.map((dbEx: any) => {
+      const dbMapped = data.map((dbEx: any) => {
         const defaultEx = DEFAULT_EXERCISES.find((d) => d.id === dbEx.id);
         return {
           ...defaultEx,
@@ -87,6 +87,9 @@ export async function getExercises(): Promise<Exercise[]> {
           secondary_muscles: dbEx.secondary_muscles || defaultEx?.secondary_muscles || []
         };
       });
+      // Append any default exercises not yet stored in DB
+      const missingExercises = DEFAULT_EXERCISES.filter((de) => !data.some((e: any) => e.id === de.id));
+      return [...dbMapped, ...missingExercises];
     }
   } catch (e) {
     console.warn('Loading default exercises', e);
@@ -101,7 +104,7 @@ export async function getTemplates(): Promise<WorkoutTemplate[]> {
     const { data: templateExercises } = await supabase.from('workout_template_exercises').select('*, exercise:exercises(*)').order('order_index');
 
     if (templates && templates.length > 0) {
-      return templates.map(t => {
+      const dbMapped = templates.map(t => {
         const defaultT = DEFAULT_TEMPLATES.find(dt => dt.code === t.code || dt.id === t.id);
         const mappedTE = (templateExercises || [])
           .filter(te => te.template_id === t.id)
@@ -125,6 +128,12 @@ export async function getTemplates(): Promise<WorkoutTemplate[]> {
           exercises: mappedTE.length > 0 ? mappedTE : defaultT?.exercises
         };
       });
+
+      // Append any new default templates (like the new Hypertrophy Pecho+Bíceps Split) not yet in DB
+      const missingTemplates = DEFAULT_TEMPLATES.filter(
+        dt => !templates.some(t => t.id === dt.id || t.code === dt.code)
+      );
+      return [...dbMapped, ...missingTemplates].sort((a, b) => (a.sequence_order || 0) - (b.sequence_order || 0));
     }
   } catch (e) {
     console.warn('Loading default templates', e);
