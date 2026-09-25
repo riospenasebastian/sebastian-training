@@ -37,22 +37,73 @@ export default function ExerciseSubstitutionModal({
     return activeExerciseIdsInSession.includes(id) && id !== currentExercise.id;
   };
 
-  const rawDirectAlts = ALTERNATIVES_MAP[currentExercise.id] || [];
-  const directAlts = rawDirectAlts.filter((alt) => !isConflict(alt.altId));
+  // STRICT RULE: All candidate alternatives MUST target the SAME muscle group or anatomical region!
+  // A leg exercise must NEVER be recommended for arms, chest, or back, and vice-versa.
+  const isSameTargetMuscleGroup = (e: Exercise) => {
+    // 1. Major anatomical body region MUST strictly match
+    // ('chest' !== 'legs', 'arms' !== 'legs', 'back' !== 'legs', etc.)
+    if (e.primary_muscle_group !== currentExercise.primary_muscle_group) {
+      return false;
+    }
 
-  // Find same movement pattern exercises
+    // 2. For arms: Biceps/Brachialis must NEVER mix with Triceps!
+    const isBicepsLike = (ex: Exercise) => {
+      const all = [ex.id, ex.primary_muscle_id, ...(ex.primary_muscles || [])].join(' ').toLowerCase();
+      return all.includes('bicep') || all.includes('braquial') || all.includes('martillo');
+    };
+    const isTricepsLike = (ex: Exercise) => {
+      const all = [ex.id, ex.primary_muscle_id, ...(ex.primary_muscles || [])].join(' ').toLowerCase();
+      return all.includes('tricep');
+    };
+
+    if (currentExercise.primary_muscle_group === 'arms') {
+      if (isBicepsLike(currentExercise) && !isBicepsLike(e)) return false;
+      if (isTricepsLike(currentExercise) && !isTricepsLike(e)) return false;
+    }
+
+    // 3. For legs: Calves (gemelos) must NEVER mix with quads / hamstrings / glutes
+    const isCalf = (ex: Exercise) => {
+      const all = [ex.id, ex.primary_muscle_id, ...(ex.primary_muscles || [])].join(' ').toLowerCase();
+      return all.includes('gemelo') || all.includes('pantorrilla');
+    };
+
+    if (isCalf(currentExercise) !== isCalf(e)) {
+      return false;
+    }
+
+    // 4. For isolation leg exercises: Quads isolation (leg extension) shouldn't mix with hamstring isolation (leg curl)
+    if (currentExercise.primary_muscle_group === 'legs' && currentExercise.movement_pattern === 'isolation') {
+      if (currentExercise.primary_muscle_id && e.primary_muscle_id && currentExercise.primary_muscle_id !== e.primary_muscle_id) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  const rawDirectAlts = ALTERNATIVES_MAP[currentExercise.id] || [];
+  const directAlts = rawDirectAlts
+    .filter((alt) => !isConflict(alt.altId))
+    .filter((alt) => {
+      const altEx = allExercises.find((e) => e.id === alt.altId);
+      return altEx && isSameTargetMuscleGroup(altEx);
+    });
+
+  // Find same movement pattern exercises ONLY within the same target muscle group!
   const patternAlts = allExercises.filter(
     (e) =>
       e.id !== currentExercise.id &&
+      isSameTargetMuscleGroup(e) &&
       e.movement_pattern === currentExercise.movement_pattern &&
+      !directAlts.some((d) => d.altId === e.id) &&
       !isConflict(e.id)
   );
 
-  // Find same primary muscle group exercises
+  // Other exercises strictly for the same muscle group
   const sameMuscleAlts = allExercises.filter(
     (e) =>
       e.id !== currentExercise.id &&
-      e.primary_muscle_group === currentExercise.primary_muscle_group &&
+      isSameTargetMuscleGroup(e) &&
       !patternAlts.some((p) => p.id === e.id) &&
       !directAlts.some((d) => d.altId === e.id) &&
       !isConflict(e.id)
@@ -211,6 +262,18 @@ export default function ExerciseSubstitutionModal({
                   <ArrowRight className="w-3.5 h-3.5 text-slate-600 group-hover:text-white shrink-0 ml-2" />
                 </button>
               ))}
+            </div>
+          )}
+
+          {/* Empty State when no alternatives match the muscle group */}
+          {directAlts.length === 0 && patternAlts.length === 0 && sameMuscleAlts.length === 0 && (
+            <div className="py-8 px-4 text-center rounded-2xl bg-slate-900/60 border border-slate-800 space-y-2">
+              <p className="text-xs text-cyan-300 font-bold">
+                No hay más ejercicios alternativos para {currentExercise.name} en esta sesión.
+              </p>
+              <p className="text-[11px] text-slate-400 max-w-xs mx-auto leading-relaxed">
+                Hemos filtrado los demás ejercicios (piernas, pecho, etc.) para que tu entrenamiento trabaje exactamente el músculo correspondiente sin desequilibrar la rutina.
+              </p>
             </div>
           )}
         </div>

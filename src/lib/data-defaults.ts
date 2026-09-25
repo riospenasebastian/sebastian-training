@@ -150,6 +150,35 @@ export const DEFAULT_EXERCISES: Exercise[] = [
     secondary_muscles: ['deltoide_posterior']
   },
   {
+    id: 'elevaciones_laterales_mancuernas',
+    name: 'Elevaciones Laterales con Mancuernas',
+    short_name: 'Laterales Mancuernas',
+    primary_muscle_group: 'shoulders',
+    primary_muscle_id: 'deltoide_lateral',
+    movement_pattern: 'isolation',
+    equipment_id: 'mancuernas',
+    difficulty: 'Principiante',
+    default_sets: 3,
+    rep_range_min: 10,
+    rep_range_max: 15,
+    default_rir: 1,
+    default_rest_sec: 90,
+    is_compound: false,
+    instructions: 'De pie con mancuernas ligeras. Eleva en el plano escapular (20-30° adelante) hasta la altura del hombro y desciende lento.',
+    setup: 'Torso con ligera inclinación de 10° hacia el frente para enfocar el deltoide lateral.',
+    execution: 'Guía con los codos y las manos hacia los lados como si empujaras las paredes. Pausa arriba y baja en 2-3 segundos.',
+    cues: 'Imagina empujar los nudillos hacia las paredes laterales.',
+    common_errors: 'Usar peso excesivo balanceando las piernas o la espalda.',
+    how_it_should_feel: 'Quemazón extrema localizada en la cabeza lateral del hombro.',
+    video_url: 'https://www.youtube.com/watch?v=3VcKaXpzqRo',
+    gif_url: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/0334.gif',
+    scientific_note: 'El plano escapular reduce el pinzamiento subacromial y maximiza la línea de tracción del deltoide lateral.',
+    why_this_exercise: 'Alternativa directa con mancuernas para desarrollar hombros anchos sin requerir poleas.',
+    ranking_tier: 'S',
+    primary_muscles: ['deltoide_lateral'],
+    secondary_muscles: ['deltoide_posterior']
+  },
+  {
     id: 'curl_biceps_inclinado',
     name: 'Curl de Bíceps en Banco Inclinado',
     short_name: 'Curl Inclinado',
@@ -348,6 +377,35 @@ export const DEFAULT_EXERCISES: Exercise[] = [
     gif_url: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/1379.gif',
     scientific_note: 'La pausa en el fondo elimina el reflejo miotático y la energía elástica del tendón de Aquiles, obligando al gastrocnemio al esfuerzo.',
     why_this_exercise: 'Asegura crecimiento real en pantorrillas.',
+    ranking_tier: 'A',
+    primary_muscles: ['gemelos'],
+    secondary_muscles: []
+  },
+  {
+    id: 'elevacion_talones_mancuernas',
+    name: 'Elevación de Talones de Pie con Mancuerna',
+    short_name: 'Gemelos Mancuerna',
+    primary_muscle_group: 'legs',
+    primary_muscle_id: 'gemelos',
+    movement_pattern: 'isolation',
+    equipment_id: 'mancuernas',
+    difficulty: 'Principiante',
+    default_sets: 3,
+    rep_range_min: 12,
+    rep_range_max: 15,
+    default_rir: 1,
+    default_rest_sec: 60,
+    is_compound: false,
+    instructions: 'De pie sobre un escalón o disco sujetando una mancuerna. Baja el talón sintiendo estiramiento 2 segundos y eleva sobre la punta.',
+    setup: 'Apoya el metatarso con rango libre hacia abajo para permitir estiramiento completo.',
+    execution: 'Pausa de 2 segundos en el fondo, eleva con fuerza apretando los gemelos arriba y desciende lento.',
+    cues: 'Pausa 2 segundos en el fondo para quitar la elasticidad del tendón de Aquiles.',
+    common_errors: 'Rebotar rápido sin recorrido.',
+    how_it_should_feel: 'Ardor profundo en los gemelos.',
+    video_url: 'https://www.youtube.com/watch?v=gwLzBJYoWlI',
+    gif_url: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/1373.gif',
+    scientific_note: 'Entrenar el gastrocnemio con rodilla extendida maximiza el reclutamiento del músculo gemelo.',
+    why_this_exercise: 'Permite entrenar pantorrillas en cualquier lugar del gimnasio con solo una mancuerna o un disco.',
     ranking_tier: 'A',
     primary_muscles: ['gemelos'],
     secondary_muscles: []
@@ -684,7 +742,10 @@ export const ALTERNATIVES_MAP: Record<string, { altId: string; reason: string }[
     { altId: 'jalon_pecho_agarre_neutro', reason: 'Tirón vertical para amplitud dorsal si buscas mayor sobrecarga con flexión de codo.' }
   ],
   elevaciones_laterales_polea: [
-    { altId: 'press_inclinado_mancuernas', reason: 'Empuje con fuerte reclutamiento de hombro frontal y lateral si no hay poleas libres.' }
+    { altId: 'elevaciones_laterales_mancuernas', reason: 'Alternativa directa con mancuernas si las poleas están ocupadas.' }
+  ],
+  elevaciones_laterales_mancuernas: [
+    { altId: 'elevaciones_laterales_polea', reason: 'Tensión constante durante todo el rango con polea.' }
   ],
   curl_biceps_inclinado: [
     { altId: 'curl_martillo_mancuernas', reason: 'Menor estrés en el tendón bicipital distal.' }
@@ -714,7 +775,10 @@ export const ALTERNATIVES_MAP: Record<string, { altId: string; reason: string }[
     { altId: 'prensa_piernas_45', reason: 'Patrón de extensión de rodilla con alto reclutamiento de cuádriceps.' }
   ],
   elevacion_talones_gemelos: [
-    { altId: 'prensa_piernas_45', reason: 'Se puede ejecutar apoyando la punta de los pies en el borde de la prensa.' }
+    { altId: 'elevacion_talones_mancuernas', reason: 'Alternativa directa de pie con mancuernas si la prensa o máquina de gemelos está ocupada.' }
+  ],
+  elevacion_talones_mancuernas: [
+    { altId: 'elevacion_talones_gemelos', reason: 'Variante con soporte guiado en máquina o prensa.' }
   ],
   plank_o_cable_woodchopper: [
     { altId: 'elevacion_piernas_colgado_o_banco', reason: 'Variante dinámica de flexión de cadera para recto abdominal inferior.' }
