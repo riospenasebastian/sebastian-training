@@ -28,7 +28,8 @@ import {
   Target,
   Minimize2,
   Maximize2,
-  Film
+  Film,
+  Info
 } from 'lucide-react';
 import MuscleMap from '../components/MuscleMap';
 import RestTimer from '../components/RestTimer';
@@ -40,6 +41,102 @@ import WarmupModal from '../components/WarmupModal';
 import { ALTERNATIVES_MAP, DEFAULT_EXERCISES } from '../lib/data-defaults';
 import { getVisualStepsForExercise } from '../lib/exercise-steps';
 import confetti from 'canvas-confetti';
+
+const EXERCISE_VARIANTS_MAP: Record<
+  string,
+  { id: string; label: string; gif_url: string; subtitle?: string }[]
+> = {
+  elevaciones_laterales_polea: [
+    {
+      id: 'polea',
+      label: '⚡ En Polea',
+      gif_url: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/0178.gif',
+      subtitle: 'Tensión constante durante todo el recorrido'
+    },
+    {
+      id: 'mancuernas',
+      label: '🏋️ Con Mancuernas',
+      gif_url: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/0334.gif',
+      subtitle: 'Variante clásica de pie con mancuernas'
+    }
+  ],
+  pullover_polea_alta: [
+    {
+      id: 'cuerda',
+      label: '🧵 Con Cuerda',
+      gif_url: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/0199.gif',
+      subtitle: 'Mayor rango de movimiento hacia las caderas'
+    },
+    {
+      id: 'barra',
+      label: '📏 Con Barra Recta',
+      gif_url: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/0237.gif',
+      subtitle: 'Agarre rígido para sobrecarga del dorsal ancho'
+    }
+  ],
+  press_frances_barra: [
+    {
+      id: 'barra_z',
+      label: '🏋️ Con Barra Z',
+      gif_url: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/0060.gif',
+      subtitle: 'Agarre angulado que protege muñecas y codos'
+    },
+    {
+      id: 'mancuernas',
+      label: '⚡ Con Mancuernas',
+      gif_url: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/0340.gif',
+      subtitle: 'Extensión tumbado con mancuernas individuales neutras'
+    }
+  ],
+  aperturas_cruces_polea: [
+    {
+      id: 'poleas',
+      label: '⚡ En Poleas Cruzadas',
+      gif_url: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/0171.gif',
+      subtitle: 'Tensión continua y cruce en el centro'
+    },
+    {
+      id: 'mancuernas',
+      label: '🏋️ Mancuernas en Banco',
+      gif_url: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/0308.gif',
+      subtitle: 'Aperturas en banco plano o inclinado con mancuernas'
+    },
+    {
+      id: 'peck_deck',
+      label: '🏢 Máquina Peck Deck',
+      gif_url: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/0293.gif',
+      subtitle: 'Aperturas guiadas si las poleas están ocupadas'
+    }
+  ],
+  press_banca_plano_barra: [
+    {
+      id: 'barra',
+      label: '🏋️ Barra Olímpica',
+      gif_url: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/0025.gif',
+      subtitle: 'Fuerza base y sobrecarga máxima con barra'
+    },
+    {
+      id: 'mancuernas',
+      label: '⚡ Con Mancuernas',
+      gif_url: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/0289.gif',
+      subtitle: 'Mayor convergencia y estiramiento con mancuernas'
+    }
+  ],
+  curl_biceps_barra: [
+    {
+      id: 'barra',
+      label: '🏋️ Barra Z o Recta',
+      gif_url: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/0031.gif',
+      subtitle: 'Constructor de masa pesada para bíceps'
+    },
+    {
+      id: 'mancuernas',
+      label: '⚡ Con Mancuernas',
+      gif_url: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/0313.gif',
+      subtitle: 'Curl de pie con mancuernas'
+    }
+  ]
+};
 
 interface WorkoutViewProps {
   template: WorkoutTemplate;
@@ -103,7 +200,7 @@ export default function WorkoutView({
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isWarmupOpen, setIsWarmupOpen] = useState(false);
   const [showVisualGuide, setShowVisualGuide] = useState(true);
-  const [lateralRaiseVariant, setLateralRaiseVariant] = useState<'polea' | 'mancuernas'>('polea');
+  const [exerciseVariantMap, setExerciseVariantMap] = useState<Record<string, string>>({});
 
   // New PR notifications
   const [unlockedPRs, setUnlockedPRs] = useState<PersonalRecord[]>([]);
@@ -563,70 +660,77 @@ export default function WorkoutView({
               </div>
             </div>
 
-            {/* Prominent Looping GIF Display */}
-            {/* If lateral raises, allow toggling between cable and dumbbell */}
-            {currentEx.id === 'elevaciones_laterales_polea' && (
-              <div className="flex items-center gap-2 p-1.5 rounded-xl bg-slate-900 border border-cyan-500/30 text-xs">
-                <span className="text-[10px] font-bold text-slate-400 pl-1 shrink-0">Modalidad:</span>
-                <button
-                  type="button"
-                  onClick={() => setLateralRaiseVariant('polea')}
-                  className={`flex-1 py-1.5 px-2 rounded-lg font-bold text-[11px] transition-all ${
-                    lateralRaiseVariant === 'polea'
-                      ? 'bg-cyan-500 text-slate-950 shadow-sm'
-                      : 'text-slate-400 hover:text-white'
-                  }`}
-                >
-                  ⚡ En Polea
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setLateralRaiseVariant('mancuernas')}
-                  className={`flex-1 py-1.5 px-2 rounded-lg font-bold text-[11px] transition-all ${
-                    lateralRaiseVariant === 'mancuernas'
-                      ? 'bg-cyan-500 text-slate-950 shadow-sm'
-                      : 'text-slate-400 hover:text-white'
-                  }`}
-                >
-                  🏋️ Con Mancuernas
-                </button>
-              </div>
-            )}
+            {/* Universal Variant Selector (Cable, Dumbbells, Barbell, Rope, etc.) */}
+            {(() => {
+              const currentVariants = EXERCISE_VARIANTS_MAP[currentEx.id];
+              if (!currentVariants) return null;
+              const activeVarId = exerciseVariantMap[currentEx.id] || currentVariants[0].id;
+              const activeVar = currentVariants.find((v) => v.id === activeVarId) || currentVariants[0];
 
-            {currentEx.gif_url && (
-              <div
-                onClick={() => setIsVideoModalOpen(true)}
-                className="relative w-full h-44 sm:h-52 rounded-xl overflow-hidden bg-slate-950 border border-cyan-500/20 flex items-center justify-center cursor-pointer group"
-                title="Toca para ver en pantalla completa"
-              >
-                <img
-                  src={
-                    currentEx.id === 'elevaciones_laterales_polea' && lateralRaiseVariant === 'mancuernas'
-                      ? 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/0334.gif'
-                      : currentEx.gif_url
-                  }
-                  alt={
-                    currentEx.id === 'elevaciones_laterales_polea' && lateralRaiseVariant === 'mancuernas'
-                      ? 'Elevaciones Laterales con Mancuernas'
-                      : currentEx.name
-                  }
-                  className="w-full h-full object-contain p-1 group-hover:scale-105 transition-transform duration-300"
-                  loading="eager"
-                />
-                <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-black/75 backdrop-blur-sm border border-cyan-500/40 text-[9px] font-bold text-cyan-300 flex items-center gap-1 pointer-events-none">
-                  <Film className="w-2.5 h-2.5 text-cyan-400 animate-pulse" />
-                  <span>
-                    {currentEx.id === 'elevaciones_laterales_polea' && lateralRaiseVariant === 'mancuernas'
-                      ? 'Mancuernas en bucle'
-                      : 'Loop continuo'}
-                  </span>
+              return (
+                <div className="flex flex-col gap-1.5 p-2 rounded-xl bg-slate-900 border border-cyan-500/30 text-xs">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold text-slate-400">Variante disponible según tu gimnasio:</span>
+                    {activeVar?.subtitle && (
+                      <span className="text-[10px] text-cyan-300 font-medium italic truncate max-w-[200px]">
+                        {activeVar.subtitle}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-1.5 pt-0.5">
+                    {currentVariants.map((v) => (
+                      <button
+                        key={v.id}
+                        type="button"
+                        onClick={() =>
+                          setExerciseVariantMap((prev) => ({ ...prev, [currentEx.id]: v.id }))
+                        }
+                        className={`flex-1 py-1.5 px-2 rounded-lg font-bold text-[11px] transition-all text-center ${
+                          activeVarId === v.id
+                            ? 'bg-cyan-500 text-slate-950 shadow-sm'
+                            : 'text-slate-400 bg-slate-950/60 hover:text-white border border-slate-800'
+                        }`}
+                      >
+                        {v.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-                <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded-lg bg-black/80 backdrop-blur-sm border border-slate-700 text-[10px] font-semibold text-slate-300 group-hover:text-cyan-300 flex items-center gap-1 transition-colors">
-                  <Video className="w-3 h-3 text-cyan-400" />
-                  <span>Toca para expandir</span>
+              );
+            })()}
+
+            {/* Prominent Looping GIF Display */}
+            {(() => {
+              const currentVariants = EXERCISE_VARIANTS_MAP[currentEx.id];
+              const activeVarId = currentVariants ? exerciseVariantMap[currentEx.id] || currentVariants[0].id : null;
+              const activeVar = currentVariants ? currentVariants.find((v) => v.id === activeVarId) : null;
+              const displayGif = activeVar?.gif_url || currentEx.gif_url;
+
+              if (!displayGif) return null;
+
+              return (
+                <div
+                  onClick={() => setIsVideoModalOpen(true)}
+                  className="relative w-full h-44 sm:h-52 rounded-xl overflow-hidden bg-slate-950 border border-cyan-500/20 flex items-center justify-center cursor-pointer group"
+                  title="Toca para ver en pantalla completa"
+                >
+                  <img
+                    src={displayGif}
+                    alt={activeVar?.label || currentEx.name}
+                    className="w-full h-full object-contain p-1 group-hover:scale-105 transition-transform duration-300"
+                    loading="eager"
+                  />
+                  <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-black/75 backdrop-blur-sm border border-cyan-500/40 text-[9px] font-bold text-cyan-300 flex items-center gap-1 pointer-events-none">
+                    <Film className="w-2.5 h-2.5 text-cyan-400 animate-pulse" />
+                    <span>{activeVar ? activeVar.label : 'Loop continuo'}</span>
+                  </div>
+                  <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded-lg bg-black/80 backdrop-blur-sm border border-slate-700 text-[10px] font-semibold text-slate-300 group-hover:text-cyan-300 flex items-center gap-1 transition-colors">
+                    <Video className="w-3 h-3 text-cyan-400" />
+                    <span>Toca para expandir</span>
+                  </div>
                 </div>
-              </div>
-            )}
+              );
+            })()}
 
             {/* 1 - 2 - 3 - 4 Visual Steps Breakdown */}
             <div className="space-y-1.5">
@@ -635,7 +739,7 @@ export default function WorkoutView({
               </span>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {getVisualStepsForExercise(
-                  currentEx.id === 'elevaciones_laterales_polea' && lateralRaiseVariant === 'mancuernas'
+                  currentEx.id === 'elevaciones_laterales_polea' && exerciseVariantMap['elevaciones_laterales_polea'] === 'mancuernas'
                     ? 'elevaciones_laterales_mancuernas'
                     : currentEx.id,
                   {
@@ -728,6 +832,39 @@ export default function WorkoutView({
         )}
       </div>
 
+      {/* WEIGHT RECORDING CLARIFICATION BADGE */}
+      {(() => {
+        const currentVariants = EXERCISE_VARIANTS_MAP[currentEx.id];
+        const activeVarId = currentVariants ? exerciseVariantMap[currentEx.id] || currentVariants[0].id : null;
+        const isDumbbell = currentEx.equipment_id === 'mancuernas' || activeVarId === 'mancuernas';
+        const isBarbell =
+          currentEx.equipment_id === 'barra_discos' || activeVarId === 'barra' || activeVarId === 'barra_z';
+
+        return (
+          <div className="p-3 rounded-2xl bg-gradient-to-r from-cyan-950/40 via-slate-900 to-slate-950 border border-cyan-500/30 text-xs flex items-start gap-2.5 shadow-sm my-3">
+            <Info className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
+            <div className="text-[11px] leading-relaxed">
+              {isDumbbell ? (
+                <span>
+                  <strong className="text-cyan-300 font-bold block mb-0.5">¿Cómo registrar el peso con Mancuernas?</strong>
+                  Anota el peso de <span className="underline decoration-cyan-400 font-black text-white">UNA sola mancuerna</span>. Por ejemplo, si usas dos mancuernas de 15 kg (una en cada mano), anotas <strong className="text-white font-bold">15 kg</strong>.
+                </span>
+              ) : isBarbell ? (
+                <span>
+                  <strong className="text-cyan-300 font-bold block mb-0.5">¿Cómo registrar el peso con Barra?</strong>
+                  Anota el <span className="underline decoration-cyan-400 font-black text-white">peso TOTAL acumulado</span> (peso de la barra + todos los discos colocados).
+                </span>
+              ) : (
+                <span>
+                  <strong className="text-cyan-300 font-bold block mb-0.5">¿Cómo registrar en Polea o Máquina?</strong>
+                  Anota el número de placa o peso seleccionado directamente en el pin de la máquina.
+                </span>
+              )}
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Set Logger Rows */}
       <div className="space-y-2.5 my-4">
         {currentItem.sets.map((set, sIdx) => {
@@ -769,7 +906,19 @@ export default function WorkoutView({
               <div className="grid grid-cols-2 gap-3 mb-2.5">
                 {/* Weight Input */}
                 <div className="space-y-1">
-                  <label className="text-[10px] text-slate-400 block">Carga (kg)</label>
+                  <label className="text-[10px] text-slate-400 flex items-center justify-between">
+                    <span>Carga (kg)</span>
+                    <span className="text-[9px] text-cyan-400 font-semibold">
+                      {currentEx.equipment_id === 'mancuernas' ||
+                      exerciseVariantMap[currentEx.id] === 'mancuernas'
+                        ? 'por mancuerna'
+                        : currentEx.equipment_id === 'barra_discos' ||
+                          exerciseVariantMap[currentEx.id] === 'barra' ||
+                          exerciseVariantMap[currentEx.id] === 'barra_z'
+                        ? 'barra + discos'
+                        : 'placas'}
+                    </span>
+                  </label>
                   <div className="flex items-center gap-1 bg-slate-950 rounded-xl border border-slate-800 p-1">
                     <button
                       type="button"

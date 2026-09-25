@@ -838,7 +838,7 @@ export const DEFAULT_EXERCISES: Exercise[] = [
     common_errors: 'Abrir los codos como alas de pollo o mover el hombro.',
     how_it_should_feel: 'Quemazón profunda en la cara posterior del brazo.',
     video_url: 'https://www.youtube.com/watch?v=d_KZxkY_0cM',
-    gif_url: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/0283.gif',
+    gif_url: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/0060.gif',
     scientific_note: 'Carga la cabeza larga del tríceps en estiramiento excéntrico para máximo crecimiento.',
     why_this_exercise: 'El clásico culturista indiscutible para tríceps gigantescos.',
     ranking_tier: 'S',
@@ -912,7 +912,7 @@ export const DEFAULT_TEMPLATES: WorkoutTemplate[] = [
       { id: 'et3', template_id: 'template_espalda_triceps', exercise_id: 'pullover_polea_alta', order_index: 3, target_sets: 3, target_reps_min: 10, target_reps_max: 15, target_rir: 1, target_rest_sec: 90, priority: 'medium', warmup_feeder_sets: 0, special_notes: 'Aislamiento directo del dorsal ancho en arco amplio.' },
       { id: 'et4', template_id: 'template_espalda_triceps', exercise_id: 'press_frances_barra', order_index: 4, target_sets: 3, target_reps_min: 8, target_reps_max: 12, target_rir: 2, target_rest_sec: 90, priority: 'medium', warmup_feeder_sets: 1, special_notes: 'Cabeza larga del tríceps con barra Z en estiramiento.' },
       { id: 'et5', template_id: 'template_espalda_triceps', exercise_id: 'triceps_pushdown_polea_cuerda', order_index: 5, target_sets: 3, target_reps_min: 10, target_reps_max: 15, target_rir: 1, target_rest_sec: 90, priority: 'low', warmup_feeder_sets: 0, special_notes: 'Herradura del tríceps separando la cuerda al final.' },
-      { id: 'et6', template_id: 'template_espalda_triceps', exercise_id: 'plank_o_cable_woodchopper', order_index: 6, target_sets: 3, target_reps_min: 30, target_reps_max: 45, target_rir: 1, target_rest_sec: 60, priority: 'low', warmup_feeder_sets: 0 },
+      { id: 'et6', template_id: 'template_espalda_triceps', exercise_id: 'extension_triceps_overhead_polea', order_index: 6, target_sets: 3, target_reps_min: 10, target_reps_max: 15, target_rir: 2, target_rest_sec: 90, priority: 'low', warmup_feeder_sets: 0, special_notes: 'Cabeza larga del tríceps en estiramiento overhead completo.' },
     ]
   },
   {
@@ -931,7 +931,7 @@ export const DEFAULT_TEMPLATES: WorkoutTemplate[] = [
       { id: 'hb3', template_id: 'template_hombros_brazos', exercise_id: 'remo_mancuerna_pecho_apoyado', order_index: 3, target_sets: 3, target_reps_min: 10, target_reps_max: 12, target_rir: 2, target_rest_sec: 90, priority: 'medium', warmup_feeder_sets: 0, special_notes: 'Abre codos a 60° para deltoide posterior y espalda alta.' },
       { id: 'hb4', template_id: 'template_hombros_brazos', exercise_id: 'curl_martillo_mancuernas', order_index: 4, target_sets: 3, target_reps_min: 10, target_reps_max: 12, target_rir: 1, target_rest_sec: 90, priority: 'medium', warmup_feeder_sets: 0 },
       { id: 'hb5', template_id: 'template_hombros_brazos', exercise_id: 'extension_triceps_overhead_polea', order_index: 5, target_sets: 3, target_reps_min: 10, target_reps_max: 15, target_rir: 1, target_rest_sec: 90, priority: 'low', warmup_feeder_sets: 0 },
-      { id: 'hb6', template_id: 'template_hombros_brazos', exercise_id: 'elevacion_piernas_colgado_o_banco', order_index: 6, target_sets: 3, target_reps_min: 10, target_reps_max: 15, target_rir: 1, target_rest_sec: 60, priority: 'low', warmup_feeder_sets: 0 },
+      { id: 'hb6', template_id: 'template_hombros_brazos', exercise_id: 'curl_biceps_inclinado', order_index: 6, target_sets: 3, target_reps_min: 10, target_reps_max: 12, target_rir: 2, target_rest_sec: 90, priority: 'low', warmup_feeder_sets: 0, special_notes: 'Pico de bíceps para completar el bombeo de brazos.' },
     ]
   },
   {
@@ -950,7 +950,7 @@ export const DEFAULT_TEMPLATES: WorkoutTemplate[] = [
       { id: 'pc3', template_id: 'template_pierna_completa', exercise_id: 'extension_piernas_maquina', order_index: 3, target_sets: 3, target_reps_min: 10, target_reps_max: 15, target_rir: 1, target_rest_sec: 90, priority: 'medium', warmup_feeder_sets: 0, special_notes: 'Ardor puro en cuádriceps hasta casi el fallo.' },
       { id: 'pc4', template_id: 'template_pierna_completa', exercise_id: 'curl_femoral_tumbado', order_index: 4, target_sets: 3, target_reps_min: 10, target_reps_max: 12, target_rir: 1, target_rest_sec: 90, priority: 'medium', warmup_feeder_sets: 0, special_notes: 'Flexión de rodilla para femoral completo.' },
       { id: 'pc5', template_id: 'template_pierna_completa', exercise_id: 'elevacion_talones_gemelos', order_index: 5, target_sets: 4, target_reps_min: 12, target_reps_max: 15, target_rir: 1, target_rest_sec: 60, priority: 'low', warmup_feeder_sets: 0, special_notes: 'Pausa estricta de 2 segundos en el fondo para disipar el rebote.' },
-      { id: 'pc6', template_id: 'template_pierna_completa', exercise_id: 'plank_o_cable_woodchopper', order_index: 6, target_sets: 3, target_reps_min: 30, target_reps_max: 45, target_rir: 1, target_rest_sec: 60, priority: 'low', warmup_feeder_sets: 0 },
+      { id: 'pc6', template_id: 'template_pierna_completa', exercise_id: 'elevacion_talones_mancuernas', order_index: 6, target_sets: 3, target_reps_min: 12, target_reps_max: 15, target_rir: 1, target_rest_sec: 60, priority: 'low', warmup_feeder_sets: 0, special_notes: 'Variante de pie unilateral con mancuerna.' },
     ]
   },
   {
@@ -1166,6 +1166,18 @@ export const WARMUP_MOBILITY_ASSETS = {
     desc: 'De pie, abre los brazos en cruz hacia atrás para estirar el pectoral y deltoides anterior, y crúzalos al frente de forma dinámica.',
     gif: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/1271.gif',
     cue: 'Abre el pecho al inhalar y cruza los brazos suaves al frente al exhalar.'
+  },
+  biceps_triceps_prep: {
+    title: 'Flexión y Extensión Dinámica de Codos con Mancuernas 1-2kg',
+    desc: 'De pie con mancuernas muy ligeras (1-2 kg), realiza flexiones y extensiones fluidas para bombear líquido sinovial a los codos y tendones de bíceps/tríceps.',
+    gif: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/0313.gif',
+    cue: 'Movimiento continuo y suave para preparar los brazos antes de cargas pesadas.'
+  },
+  rotator_cuff_external: {
+    title: 'Rotaciones Externas de Manguito Rotador con Mancuerna 1-2kg',
+    desc: 'De pie con codo en 90° pegado al costado, rota hacia afuera para activar el infraespinoso y estabilizar el hombro en empujes y presses.',
+    gif: 'https://cdn.jsdelivr.net/gh/omercotkd/exercises-gifs@main/assets/2143.gif',
+    cue: 'Mantén el codo pegado a la cintura sin despegarlo.'
   },
   ankle_mobility: {
     title: 'Movilidad de Tobillo contra Pared (De Pie)',

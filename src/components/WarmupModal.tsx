@@ -54,19 +54,38 @@ export default function WarmupModal({
 
   if (!isOpen) return null;
 
-  const isLower = template.code.includes('lower') || template.code.includes('pierna');
-  const isUpper = !isLower;
-  const mobilityItems = isUpper
-    ? [
-        WARMUP_MOBILITY_ASSETS.arm_circles,
-        WARMUP_MOBILITY_ASSETS.scapular_retractions,
-        WARMUP_MOBILITY_ASSETS.thoracic_rotation,
-      ]
-    : [
-        WARMUP_MOBILITY_ASSETS.ankle_mobility,
-        WARMUP_MOBILITY_ASSETS.hip_90_90,
-        WARMUP_MOBILITY_ASSETS.goblet_squat_hold,
-      ];
+  // Routine-specific tailored warmups (100% standing and light dumbbells 1-2kg)
+  let mobilityItems = [
+    WARMUP_MOBILITY_ASSETS.arm_circles,
+    WARMUP_MOBILITY_ASSETS.thoracic_rotation,
+    WARMUP_MOBILITY_ASSETS.scapular_retractions,
+  ];
+
+  if (template.code.includes('pecho')) {
+    mobilityItems = [
+      WARMUP_MOBILITY_ASSETS.arm_circles, // Around the world de pie
+      WARMUP_MOBILITY_ASSETS.thoracic_rotation, // Aperturas dinámicas de pecho
+      WARMUP_MOBILITY_ASSETS.biceps_triceps_prep, // Flexo-extensión suave de codos para bíceps
+    ];
+  } else if (template.code.includes('espalda')) {
+    mobilityItems = [
+      WARMUP_MOBILITY_ASSETS.scapular_retractions, // Elevaciones en Y y retracción escapular
+      WARMUP_MOBILITY_ASSETS.thoracic_rotation, // Aperturas y rotación torácica
+      WARMUP_MOBILITY_ASSETS.biceps_triceps_prep, // Flexo-extensión suave de codos para tríceps
+    ];
+  } else if (template.code.includes('hombro')) {
+    mobilityItems = [
+      WARMUP_MOBILITY_ASSETS.arm_circles, // Around the world con mancuernas 1-2kg
+      WARMUP_MOBILITY_ASSETS.rotator_cuff_external, // Rotaciones externas de manguito rotador
+      WARMUP_MOBILITY_ASSETS.scapular_retractions, // Elevaciones en Y para deltoides
+    ];
+  } else if (template.code.includes('pierna') || template.code.includes('lower')) {
+    mobilityItems = [
+      WARMUP_MOBILITY_ASSETS.ankle_mobility, // Movilidad de tobillo contra pared de pie
+      WARMUP_MOBILITY_ASSETS.hip_90_90, // Elevaciones dinámicas de talones
+      WARMUP_MOBILITY_ASSETS.goblet_squat_hold, // Sentadilla profunda de pie con soporte
+    ];
+  }
 
   // Feeder sets calculation
   const feederSets = [
