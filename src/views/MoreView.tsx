@@ -232,7 +232,7 @@ export default function MoreView({
             className="w-full py-3 px-4 rounded-2xl bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-400/40 hover:border-cyan-400 text-cyan-300 font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-md active:scale-98"
           >
             <Camera className="w-4 h-4 text-cyan-400" />
-            <span>📹 Grabar Nuevo Ejercicio con Video (del Profe)</span>
+            <span>📹 Grabar Nuevo Ejercicio con Video</span>
           </button>
 
           {/* Search bar */}
@@ -376,7 +376,7 @@ export default function MoreView({
             className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-slate-950 font-black text-xs flex items-center justify-center gap-2 transition-all shadow-lg shadow-cyan-500/20 active:scale-98"
           >
             <Plus className="w-4 h-4" />
-            <span>✨ Crear Nueva Rutina Personalizada del Profe</span>
+            <span>✨ Crear Nueva Rutina Personalizada</span>
           </button>
 
           <p className="text-xs text-slate-400">
@@ -438,7 +438,7 @@ export default function MoreView({
                   <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-[11px] space-y-1">
                     <div className="flex items-center gap-1.5 text-amber-300 font-bold">
                       <Flame className="w-3 h-3" />
-                      <span>Calentamiento del Profe ({tpl.warmup_exercises.length} ejercicios):</span>
+                      <span>Calentamiento Personalizado ({tpl.warmup_exercises.length} ejercicios):</span>
                     </div>
                     <div className="text-slate-300 space-y-0.5">
                       {tpl.warmup_exercises.map((w, wIdx) => (

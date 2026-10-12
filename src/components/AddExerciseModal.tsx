@@ -84,7 +84,7 @@ export default function AddExerciseModal({
               className="w-full py-2.5 px-3 rounded-2xl bg-cyan-500/15 border border-cyan-400/40 hover:bg-cyan-500/25 text-cyan-300 font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-sm"
             >
               <Camera className="w-4 h-4 text-cyan-400" />
-              <span>¿No está en la lista? Crear con Video del Profe</span>
+              <span>¿No está en la lista? Grabar o Crear con Video</span>
             </button>
           </div>
 

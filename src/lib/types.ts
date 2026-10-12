@@ -97,6 +97,7 @@ export interface WorkoutTemplate {
   warmup_mobility: string;
   exercises?: WorkoutTemplateExercise[];
   warmup_exercises?: WorkoutWarmupExercise[];
+  target_muscle_groups?: string[];
   is_custom?: boolean;
   created_at?: string;
 }

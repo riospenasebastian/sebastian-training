@@ -35,6 +35,19 @@ interface RoutineEditorModalProps {
   onAddNewCustomExercise: (exercise: Exercise) => void;
 }
 
+const AVAILABLE_MUSCLE_GROUPS = [
+  'Pecho',
+  'Espalda',
+  'Hombros',
+  'Bíceps',
+  'Tríceps',
+  'Cuádriceps',
+  'Isquiosurales',
+  'Glúteos',
+  'Gemelos',
+  'Core / Abdomen',
+];
+
 export default function RoutineEditorModal({
   isOpen,
   onClose,
@@ -46,6 +59,9 @@ export default function RoutineEditorModal({
   // Routine Info
   const [name, setName] = useState(initialTemplate?.name || '');
   const [targetFocus, setTargetFocus] = useState(initialTemplate?.target_focus || '');
+  const [selectedMuscles, setSelectedMuscles] = useState<string[]>(
+    initialTemplate?.target_muscle_groups || []
+  );
   const [description, setDescription] = useState(initialTemplate?.description || '');
   const [estimatedDuration, setEstimatedDuration] = useState(initialTemplate?.estimated_duration_min || 60);
   const [warmupCardioMin, setWarmupCardioMin] = useState(initialTemplate?.warmup_cardio_min || 5);
@@ -180,6 +196,7 @@ export default function RoutineEditorModal({
       code,
       sequence_order: initialTemplate?.sequence_order || 99,
       target_focus: targetFocus.trim() || name.trim(),
+      target_muscle_groups: selectedMuscles.length > 0 ? selectedMuscles : [targetFocus || name],
       estimated_duration_min: estimatedDuration,
       description: description.trim() || 'Rutina personalizada adaptada del gimnasio',
       warmup_cardio_min: warmupCardioMin,
@@ -220,7 +237,7 @@ export default function RoutineEditorModal({
               <h3 className="text-base font-bold text-white">
                 {initialTemplate ? 'Editar Rutina' : 'Nueva Rutina Personalizada'}
               </h3>
-              <p className="text-xs text-slate-400">Arma los ejercicios y calentamientos que te pone el profe</p>
+              <p className="text-xs text-slate-400">Configura los grupos musculares, calentamiento y ejercicios</p>
             </div>
           </div>
           <button
@@ -233,8 +250,8 @@ export default function RoutineEditorModal({
 
         {/* Content Form */}
         <form onSubmit={handleSave} className="p-4 overflow-y-auto space-y-5 flex-1">
-          {/* General Routine Info */}
-          <div className="space-y-3 p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800">
+          {/* General Routine Info & Muscle Groups */}
+          <div className="space-y-3.5 p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800">
             <div>
               <label className="text-xs font-bold text-slate-200 block mb-1">
                 Nombre de la Rutina <span className="text-cyan-400">*</span>
@@ -242,21 +259,63 @@ export default function RoutineEditorModal({
               <input
                 type="text"
                 required
-                placeholder="Ej: Lunes - Pierna Gimnasio, Martes - Pecho y Bíceps..."
+                placeholder="Ej: Pecho & Bíceps, Pierna Completa, Hombros..."
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400"
               />
             </div>
 
+            {/* Muscle Groups Selection Chips */}
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-[11px] font-bold uppercase tracking-wider text-slate-300">
+                  Grupos Musculares de esta Rutina:
+                </label>
+                <span className="text-[10px] text-cyan-400 font-semibold">
+                  {selectedMuscles.length > 0 ? `${selectedMuscles.length} seleccionados` : 'Toca para elegir'}
+                </span>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {AVAILABLE_MUSCLE_GROUPS.map((m) => {
+                  const isSel = selectedMuscles.includes(m);
+                  return (
+                    <button
+                      key={m}
+                      type="button"
+                      onClick={() => {
+                        const next = isSel
+                          ? selectedMuscles.filter((item) => item !== m)
+                          : [...selectedMuscles, m];
+                        setSelectedMuscles(next);
+                        if (!name.trim()) {
+                          setName(next.join(' & '));
+                        }
+                        if (!targetFocus.trim()) {
+                          setTargetFocus(next.join(', '));
+                        }
+                      }}
+                      className={`px-2.5 py-1 rounded-xl text-xs font-bold transition-all border ${
+                        isSel
+                          ? 'bg-cyan-500 text-slate-950 border-cyan-400 shadow-sm shadow-cyan-500/20'
+                          : 'bg-slate-950/80 text-slate-400 border-slate-800 hover:text-white hover:border-slate-700'
+                      }`}
+                    >
+                      {isSel ? `✓ ${m}` : `+ ${m}`}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             <div className="grid grid-cols-2 gap-2">
               <div>
                 <label className="text-[11px] font-semibold text-slate-400 block mb-1">
-                  Enfoque / Músculos
+                  Enfoque / Detalle
                 </label>
                 <input
                   type="text"
-                  placeholder="Ej: Cuádriceps, Isquios, Gemelos"
+                  placeholder="Ej: Foco pectoral superior, bíceps pesado"
                   value={targetFocus}
                   onChange={(e) => setTargetFocus(e.target.value)}
                   className="w-full px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400"
