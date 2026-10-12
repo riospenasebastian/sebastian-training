@@ -58,6 +58,24 @@ export interface Exercise {
   ranking_tier: 'S' | 'A' | 'B';
   primary_muscles?: string[];
   secondary_muscles?: string[];
+  is_custom?: boolean;
+  video_type?: 'youtube' | 'local_video' | 'gif';
+  video_storage_key?: string;
+  video_file_name?: string;
+  notes?: string;
+}
+
+export interface WorkoutWarmupExercise {
+  id: string;
+  exercise_id?: string;
+  name: string;
+  sets?: number;
+  reps_or_time?: string; // e.g. "3 series x 15 reps" or "5 min"
+  notes?: string;
+  video_url?: string;
+  gif_url?: string;
+  video_storage_key?: string;
+  exercise?: Exercise;
 }
 
 export interface ExerciseAlternative {
@@ -78,6 +96,9 @@ export interface WorkoutTemplate {
   warmup_cardio_min: number;
   warmup_mobility: string;
   exercises?: WorkoutTemplateExercise[];
+  warmup_exercises?: WorkoutWarmupExercise[];
+  is_custom?: boolean;
+  created_at?: string;
 }
 
 export interface WorkoutTemplateExercise {

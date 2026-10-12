@@ -20,6 +20,10 @@ import {
   saveBodyMeasurement,
   getPersonalRecords,
   checkAndRecordPR,
+  saveCustomExercise,
+  deleteCustomExercise,
+  saveCustomTemplate,
+  deleteCustomTemplate,
 } from '../lib/supabase';
 import { DEFAULT_TEMPLATES, DEFAULT_EXERCISES } from '../lib/data-defaults';
 import BottomNav, { TabType } from '../components/BottomNav';
@@ -28,6 +32,8 @@ import WorkoutView from '../views/WorkoutView';
 import ProgressView from '../views/ProgressView';
 import MoreView from '../views/MoreView';
 import WarmupModal from '../components/WarmupModal';
+import CustomExerciseModal from '../components/CustomExerciseModal';
+import RoutineEditorModal from '../components/RoutineEditorModal';
 
 const ACTIVE_WORKOUT_STORAGE_KEY = 'sebasgym_active_workout_state';
 
@@ -55,6 +61,13 @@ export default function App() {
 
   // Warmup modal state
   const [warmupModal, setWarmupModal] = useState<{
+    isOpen: boolean;
+    template: WorkoutTemplate | null;
+  }>({ isOpen: false, template: null });
+
+  // Custom routines and exercise creation modals
+  const [isCustomExModalOpen, setIsCustomExModalOpen] = useState(false);
+  const [routineEditor, setRoutineEditor] = useState<{
     isOpen: boolean;
     template: WorkoutTemplate | null;
   }>({ isOpen: false, template: null });
@@ -186,6 +199,27 @@ export default function App() {
     setProfile(updated);
   };
 
+  // Custom routines and exercise handlers
+  const handleSaveCustomExercise = async (newEx: Exercise) => {
+    const saved = await saveCustomExercise(newEx);
+    setExercises((prev) => [saved, ...prev.filter((e) => e.id !== saved.id)]);
+  };
+
+  const handleDeleteCustomExercise = async (exerciseId: string) => {
+    await deleteCustomExercise(exerciseId);
+    setExercises((prev) => prev.filter((e) => e.id !== exerciseId));
+  };
+
+  const handleSaveCustomTemplate = async (newTpl: WorkoutTemplate) => {
+    const saved = await saveCustomTemplate(newTpl);
+    setTemplates((prev) => [saved, ...prev.filter((t) => t.id !== saved.id)]);
+  };
+
+  const handleDeleteCustomTemplate = async (templateId: string) => {
+    await deleteCustomTemplate(templateId);
+    setTemplates((prev) => prev.filter((t) => t.id !== templateId));
+  };
+
   const lastSession = workoutHistory[0] || null;
   const latestMeasurement = measurements[0] || null;
 
@@ -213,6 +247,9 @@ export default function App() {
             onOpenWarmup={(tpl) => setWarmupModal({ isOpen: true, template: tpl })}
             onSaveMeasurement={handleSaveMeasurement}
             onNavigateTab={setCurrentTab}
+            onOpenCreateRoutine={() => setRoutineEditor({ isOpen: true, template: null })}
+            onOpenEditRoutine={(tpl) => setRoutineEditor({ isOpen: true, template: tpl })}
+            onOpenCreateExercise={() => setIsCustomExModalOpen(true)}
           />
         )}
 
@@ -271,6 +308,11 @@ export default function App() {
             onSelectRoutine={(tpl) => {
               handleStartWorkout(tpl, 'normal');
             }}
+            onOpenCreateRoutine={() => setRoutineEditor({ isOpen: true, template: null })}
+            onOpenEditRoutine={(tpl) => setRoutineEditor({ isOpen: true, template: tpl })}
+            onDeleteRoutine={handleDeleteCustomTemplate}
+            onOpenCreateExercise={() => setIsCustomExModalOpen(true)}
+            onDeleteExercise={handleDeleteCustomExercise}
           />
         )}
       </div>
@@ -289,6 +331,24 @@ export default function App() {
           targetWorkingWeightKg={20}
         />
       )}
+
+      {/* Custom Routine Creator & Editor Modal */}
+      <RoutineEditorModal
+        isOpen={routineEditor.isOpen}
+        onClose={() => setRoutineEditor({ isOpen: false, template: null })}
+        onSaveRoutine={handleSaveCustomTemplate}
+        initialTemplate={routineEditor.template}
+        allExercises={exercises}
+        onAddNewCustomExercise={handleSaveCustomExercise}
+      />
+
+      {/* Custom Exercise Creator Modal */}
+      <CustomExerciseModal
+        isOpen={isCustomExModalOpen}
+        onClose={() => setIsCustomExModalOpen(false)}
+        onSaveExercise={handleSaveCustomExercise}
+        initialMuscleGroup="arms"
+      />
 
       {/* Mobile Bottom Navigation (Always accessible, shows active badge when workout is running) */}
       <BottomNav

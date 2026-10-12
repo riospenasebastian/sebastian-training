@@ -22,7 +22,12 @@ import {
   RotateCcw,
   SlidersHorizontal,
   Flame,
-  X
+  X,
+  Camera,
+  Video,
+  Plus,
+  Edit3,
+  Trash2
 } from 'lucide-react';
 import MuscleMap from '../components/MuscleMap';
 import ExerciseVideoModal from '../components/ExerciseVideoModal';
@@ -35,6 +40,11 @@ interface MoreViewProps {
   beginnerMode: boolean;
   onToggleBeginnerMode: (val: boolean) => void;
   onSelectRoutine: (template: WorkoutTemplate) => void;
+  onOpenCreateRoutine?: () => void;
+  onOpenEditRoutine?: (template: WorkoutTemplate) => void;
+  onDeleteRoutine?: (templateId: string) => void;
+  onOpenCreateExercise?: () => void;
+  onDeleteExercise?: (exerciseId: string) => void;
 }
 
 export default function MoreView({
@@ -44,6 +54,11 @@ export default function MoreView({
   beginnerMode,
   onToggleBeginnerMode,
   onSelectRoutine,
+  onOpenCreateRoutine,
+  onOpenEditRoutine,
+  onDeleteRoutine,
+  onOpenCreateExercise,
+  onDeleteExercise,
 }: MoreViewProps) {
   const [subView, setSubView] = useState<
     'menu' | 'exercises' | 'routines' | 'history' | 'equipment' | 'science'
@@ -69,7 +84,11 @@ export default function MoreView({
       ex.short_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       ex.primary_muscle_group.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesMuscle =
-      selectedMuscleFilter === 'all' || ex.primary_muscle_group === selectedMuscleFilter;
+      selectedMuscleFilter === 'all'
+        ? true
+        : selectedMuscleFilter === 'custom'
+        ? ex.is_custom
+        : ex.primary_muscle_group === selectedMuscleFilter;
     return matchesSearch && matchesMuscle;
   });
 
@@ -207,6 +226,15 @@ export default function MoreView({
       {/* SUBVIEW 1: EXERCISES LIBRARY */}
       {subView === 'exercises' && (
         <div className="space-y-3">
+          {/* Create Custom Exercise with Video Button */}
+          <button
+            onClick={() => onOpenCreateExercise?.()}
+            className="w-full py-3 px-4 rounded-2xl bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-400/40 hover:border-cyan-400 text-cyan-300 font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-md active:scale-98"
+          >
+            <Camera className="w-4 h-4 text-cyan-400" />
+            <span>📹 Grabar Nuevo Ejercicio con Video (del Profe)</span>
+          </button>
+
           {/* Search bar */}
           <div className="relative">
             <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -221,7 +249,7 @@ export default function MoreView({
 
           {/* Muscle Pills Filter */}
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-xs">
-            {['all', 'chest', 'back', 'shoulders', 'arms', 'legs', 'core'].map((cat) => (
+            {['all', 'custom', 'chest', 'back', 'shoulders', 'arms', 'legs', 'core'].map((cat) => (
               <button
                 key={cat}
                 onClick={() => setSelectedMuscleFilter(cat)}
@@ -231,47 +259,101 @@ export default function MoreView({
                     : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-white'
                 }`}
               >
-                {cat === 'all' ? 'Todos' : cat === 'chest' ? 'Pecho' : cat === 'back' ? 'Espalda' : cat === 'shoulders' ? 'Hombros' : cat === 'arms' ? 'Brazos' : cat === 'legs' ? 'Piernas' : 'Core'}
+                {cat === 'all'
+                  ? 'Todos'
+                  : cat === 'custom'
+                  ? '⭐ Mis Videos / Profe'
+                  : cat === 'chest'
+                  ? 'Pecho'
+                  : cat === 'back'
+                  ? 'Espalda'
+                  : cat === 'shoulders'
+                  ? 'Hombros'
+                  : cat === 'arms'
+                  ? 'Brazos'
+                  : cat === 'legs'
+                  ? 'Piernas'
+                  : 'Core'}
               </button>
             ))}
           </div>
 
           {/* Exercise List */}
           <div className="space-y-2">
-            {filteredExercises.map((ex) => (
-              <div
-                key={ex.id}
-                onClick={() => setActiveModalExercise(ex)}
-                className="p-3 rounded-2xl bg-slate-900/70 border border-slate-800 hover:border-cyan-500/40 flex items-center justify-between cursor-pointer group transition-all"
-              >
-                <div className="flex items-center gap-3">
-                  {ex.gif_url && (
-                    <div className="w-12 h-12 rounded-xl bg-slate-950 p-1 border border-slate-800 shrink-0 overflow-hidden">
-                      <img
-                        src={ex.gif_url}
-                        alt={ex.name}
-                        className="w-full h-full object-contain"
-                        loading="lazy"
-                      />
+            {filteredExercises.length === 0 ? (
+              <div className="py-8 text-center text-slate-500 text-xs">
+                No se encontraron ejercicios con este filtro.
+              </div>
+            ) : (
+              filteredExercises.map((ex) => (
+                <div
+                  key={ex.id}
+                  onClick={() => setActiveModalExercise(ex)}
+                  className="p-3 rounded-2xl bg-slate-900/70 border border-slate-800 hover:border-cyan-500/40 flex items-center justify-between cursor-pointer group transition-all"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    {ex.gif_url ? (
+                      <div className="w-12 h-12 rounded-xl bg-slate-950 p-1 border border-slate-800 shrink-0 overflow-hidden">
+                        <img
+                          src={ex.gif_url}
+                          alt={ex.name}
+                          className="w-full h-full object-contain"
+                          loading="lazy"
+                        />
+                      </div>
+                    ) : (
+                      <div className="w-12 h-12 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center text-cyan-400 shrink-0">
+                        {ex.video_storage_key ? <Video className="w-5 h-5" /> : <Dumbbell className="w-5 h-5" />}
+                      </div>
+                    )}
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-1.5 mb-0.5">
+                        {ex.is_custom ? (
+                          <span className="px-1.5 py-0.5 rounded text-[9px] font-black bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                            Personalizado
+                          </span>
+                        ) : (
+                          <span className="px-1.5 py-0.5 rounded text-[9px] font-black bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+                            Tier {ex.ranking_tier}
+                          </span>
+                        )}
+                        <h4 className="text-xs font-bold text-white group-hover:text-cyan-300 truncate">
+                          {ex.name}
+                        </h4>
+                      </div>
+                      <p className="text-[10px] text-slate-400">
+                        {ex.default_sets} series × {ex.rep_range_min}-{ex.rep_range_max} reps • {ex.default_rest_sec}s descanso
+                      </p>
                     </div>
-                  )}
-                  <div>
-                    <div className="flex items-center gap-1.5 mb-0.5">
-                      <span className="px-1.5 py-0.5 rounded text-[9px] font-black bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
-                        Tier {ex.ranking_tier}
+                  </div>
+
+                  <div className="flex items-center gap-2 shrink-0">
+                    {(ex.video_storage_key || ex.video_url) && (
+                      <span className="px-1.5 py-0.5 rounded text-[9px] bg-cyan-500/20 text-cyan-300 font-bold flex items-center gap-0.5">
+                        <Video className="w-2.5 h-2.5" />
+                        <span>Video</span>
                       </span>
-                      <h4 className="text-xs font-bold text-white group-hover:text-cyan-300">
-                        {ex.name}
-                      </h4>
-                    </div>
-                    <p className="text-[10px] text-slate-400">
-                      {ex.default_sets} series × {ex.rep_range_min}-{ex.rep_range_max} reps • {ex.default_rest_sec}s descanso
-                    </p>
+                    )}
+                    {ex.is_custom && onDeleteExercise && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (confirm(`¿Eliminar ejercicio "${ex.name}"?`)) {
+                            onDeleteExercise(ex.id);
+                          }
+                        }}
+                        className="p-1 text-slate-500 hover:text-red-400 transition-colors"
+                        title="Eliminar ejercicio"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                    <ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-cyan-400 shrink-0" />
                   </div>
                 </div>
-                <ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-cyan-400 shrink-0" />
-              </div>
-            ))}
+              ))
+            )}
           </div>
 
           {activeModalExercise && (
@@ -287,27 +369,95 @@ export default function MoreView({
 
       {/* SUBVIEW 2: ROUTINES */}
       {subView === 'routines' && (
-        <div className="space-y-3">
+        <div className="space-y-4">
+          {/* Create Custom Routine Button */}
+          <button
+            onClick={() => onOpenCreateRoutine?.()}
+            className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-slate-950 font-black text-xs flex items-center justify-center gap-2 transition-all shadow-lg shadow-cyan-500/20 active:scale-98"
+          >
+            <Plus className="w-4 h-4" />
+            <span>✨ Crear Nueva Rutina Personalizada del Profe</span>
+          </button>
+
           <p className="text-xs text-slate-400">
-            La secuencia avanza automáticamente después de cada sesión completada:
+            Tus rutinas disponibles para entrenar:
           </p>
 
           <div className="space-y-3">
             {templates.map((tpl, i) => (
-              <div key={tpl.id} className="glass-panel rounded-3xl p-4 space-y-2">
+              <div
+                key={tpl.id}
+                className={`glass-panel rounded-3xl p-4 space-y-3 border ${
+                  tpl.is_custom ? 'border-cyan-500/40 bg-[#0d1424]' : 'border-slate-800'
+                }`}
+              >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-400 text-xs font-black flex items-center justify-center font-mono">
                       {i + 1}
                     </span>
                     <h3 className="text-sm font-bold text-white">{tpl.name}</h3>
+                    {tpl.is_custom && (
+                      <span className="px-1.5 py-0.2 rounded text-[9px] bg-purple-500/20 text-purple-300 font-bold">
+                        Personalizada
+                      </span>
+                    )}
                   </div>
-                  <span className="text-[10px] text-slate-400">{tpl.estimated_duration_min} min</span>
+
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] text-slate-400">{tpl.estimated_duration_min} min</span>
+                    {tpl.is_custom && onOpenEditRoutine && (
+                      <button
+                        onClick={() => onOpenEditRoutine(tpl)}
+                        className="p-1 text-slate-400 hover:text-cyan-400 transition-colors"
+                        title="Editar rutina"
+                      >
+                        <Edit3 className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                    {tpl.is_custom && onDeleteRoutine && (
+                      <button
+                        onClick={() => {
+                          if (confirm(`¿Eliminar la rutina "${tpl.name}"?`)) {
+                            onDeleteRoutine(tpl.id);
+                          }
+                        }}
+                        className="p-1 text-slate-500 hover:text-red-400 transition-colors"
+                        title="Eliminar rutina"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 <p className="text-xs text-slate-300">{tpl.target_focus}</p>
 
+                {/* Warmup summary if custom warmup exists */}
+                {tpl.warmup_exercises && tpl.warmup_exercises.length > 0 && (
+                  <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-[11px] space-y-1">
+                    <div className="flex items-center gap-1.5 text-amber-300 font-bold">
+                      <Flame className="w-3 h-3" />
+                      <span>Calentamiento del Profe ({tpl.warmup_exercises.length} ejercicios):</span>
+                    </div>
+                    <div className="text-slate-300 space-y-0.5">
+                      {tpl.warmup_exercises.map((w, wIdx) => (
+                        <div key={w.id || wIdx} className="flex items-center justify-between">
+                          <span>• {w.name}</span>
+                          <span className="text-amber-400/80 font-mono text-[10px]">
+                            {w.sets} × {w.reps_or_time}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Main Exercises summary */}
                 <div className="text-[11px] text-slate-400 space-y-1 pt-1 border-t border-slate-800">
+                  <span className="text-[10px] font-bold text-slate-400 block uppercase">
+                    Ejercicios principales ({tpl.exercises?.length || 0}):
+                  </span>
                   {tpl.exercises?.map((te, idx) => (
                     <div key={te.id || idx} className="flex items-center justify-between">
                       <span className="text-slate-300">
@@ -322,7 +472,7 @@ export default function MoreView({
 
                 <button
                   onClick={() => onSelectRoutine(tpl)}
-                  className="w-full mt-2 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-400 font-bold text-xs"
+                  className="w-full mt-2 py-2.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500 border border-cyan-500/30 text-cyan-300 hover:text-slate-950 font-bold text-xs transition-all active:scale-98"
                 >
                   Seleccionar esta rutina para hoy
                 </button>

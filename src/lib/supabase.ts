@@ -14,6 +14,8 @@ const STORAGE_KEYS = {
   PRS: 'sebasgym_prs',
   EQUIPMENT: 'sebasgym_equipment',
   ACTIVE_WORKOUT: 'sebasgym_active_workout',
+  CUSTOM_EXERCISES: 'sebasgym_custom_exercises',
+  CUSTOM_TEMPLATES: 'sebasgym_custom_templates',
 };
 
 // --- Profile ---
@@ -62,43 +64,167 @@ export async function saveProfile(profile: Partial<Profile>): Promise<Profile> {
   return updated;
 }
 
-// --- Exercises ---
+// --- Custom Exercises Storage ---
+export function getStoredCustomExercises(): Exercise[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.CUSTOM_EXERCISES);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {
+    console.warn('Error reading custom exercises', e);
+  }
+  return [];
+}
+
+export async function saveCustomExercise(exercise: Exercise): Promise<Exercise> {
+  const list = getStoredCustomExercises();
+  const existingIndex = list.findIndex(e => e.id === exercise.id);
+  let updatedList: Exercise[];
+  if (existingIndex >= 0) {
+    updatedList = [...list];
+    updatedList[existingIndex] = { ...exercise, is_custom: true };
+  } else {
+    updatedList = [{ ...exercise, is_custom: true }, ...list];
+  }
+
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(STORAGE_KEYS.CUSTOM_EXERCISES, JSON.stringify(updatedList));
+  }
+
+  try {
+    await supabase.from('exercises').upsert({
+      id: exercise.id,
+      name: exercise.name,
+      short_name: exercise.short_name,
+      primary_muscle_group: exercise.primary_muscle_group,
+      primary_muscle_id: exercise.primary_muscle_id,
+      movement_pattern: exercise.movement_pattern,
+      equipment_id: exercise.equipment_id,
+      difficulty: exercise.difficulty,
+      default_sets: exercise.default_sets,
+      rep_range_min: exercise.rep_range_min,
+      rep_range_max: exercise.rep_range_max,
+      default_rir: exercise.default_rir,
+      default_rest_sec: exercise.default_rest_sec,
+      instructions: exercise.instructions,
+      cues: exercise.cues,
+      video_url: exercise.video_url,
+      gif_url: exercise.gif_url
+    });
+  } catch (e) {
+    console.warn('Saved custom exercise locally', e);
+  }
+
+  return { ...exercise, is_custom: true };
+}
+
+export async function deleteCustomExercise(exerciseId: string): Promise<void> {
+  const list = getStoredCustomExercises();
+  const updatedList = list.filter(e => e.id !== exerciseId);
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(STORAGE_KEYS.CUSTOM_EXERCISES, JSON.stringify(updatedList));
+  }
+  try {
+    await supabase.from('exercises').delete().eq('id', exerciseId);
+  } catch {}
+}
+
+// --- Exercises (Default + Custom) ---
 export async function getExercises(): Promise<Exercise[]> {
+  const customList = getStoredCustomExercises();
+  let baseExercises: Exercise[] = DEFAULT_EXERCISES;
+
   try {
     const { data, error } = await supabase.from('exercises').select('*');
     if (data && data.length > 0 && !error) {
       const dbMapped = data.map((dbEx: any) => {
         const defaultEx = DEFAULT_EXERCISES.find((d) => d.id === dbEx.id);
+        const customEx = customList.find((c) => c.id === dbEx.id);
         return {
           ...defaultEx,
+          ...customEx,
           ...dbEx,
-          gif_url: dbEx.gif_url || defaultEx?.gif_url || '',
-          instructions: dbEx.instructions || defaultEx?.instructions || '',
-          setup: dbEx.setup || defaultEx?.setup || '',
-          execution: dbEx.execution || defaultEx?.execution || '',
-          cues: dbEx.cues || defaultEx?.cues || '',
+          gif_url: dbEx.gif_url || defaultEx?.gif_url || customEx?.gif_url || '',
+          instructions: dbEx.instructions || defaultEx?.instructions || customEx?.instructions || '',
+          setup: dbEx.setup || defaultEx?.setup || customEx?.setup || '',
+          execution: dbEx.execution || defaultEx?.execution || customEx?.execution || '',
+          cues: dbEx.cues || defaultEx?.cues || customEx?.cues || '',
           common_errors: dbEx.common_errors || defaultEx?.common_errors || '',
           how_it_should_feel: dbEx.how_it_should_feel || defaultEx?.how_it_should_feel || '',
-          video_url: dbEx.video_url || defaultEx?.video_url || '',
+          video_url: dbEx.video_url || defaultEx?.video_url || customEx?.video_url || '',
           scientific_note: dbEx.scientific_note || defaultEx?.scientific_note || '',
           why_this_exercise: dbEx.why_this_exercise || defaultEx?.why_this_exercise || '',
           ranking_tier: dbEx.ranking_tier || defaultEx?.ranking_tier || 'A',
-          primary_muscles: dbEx.primary_muscles || defaultEx?.primary_muscles || [],
+          primary_muscles: dbEx.primary_muscles || defaultEx?.primary_muscles || [dbEx.primary_muscle_id],
           secondary_muscles: dbEx.secondary_muscles || defaultEx?.secondary_muscles || []
         };
       });
-      // Append any default exercises not yet stored in DB
       const missingExercises = DEFAULT_EXERCISES.filter((de) => !data.some((e: any) => e.id === de.id));
-      return [...dbMapped, ...missingExercises];
+      baseExercises = [...dbMapped, ...missingExercises];
     }
   } catch (e) {
     console.warn('Loading default exercises', e);
   }
-  return DEFAULT_EXERCISES;
+
+  // Merge custom exercises that might not be in DB yet
+  const combined = [...customList];
+  for (const ex of baseExercises) {
+    if (!combined.some(c => c.id === ex.id)) {
+      combined.push(ex);
+    }
+  }
+  return combined;
 }
 
-// --- Workout Templates ---
+// --- Custom Templates Storage ---
+export function getStoredCustomTemplates(): WorkoutTemplate[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.CUSTOM_TEMPLATES);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {
+    console.warn('Error reading custom templates', e);
+  }
+  return [];
+}
+
+export async function saveCustomTemplate(template: WorkoutTemplate): Promise<WorkoutTemplate> {
+  const list = getStoredCustomTemplates();
+  const existingIdx = list.findIndex(t => t.id === template.id);
+  const toSave: WorkoutTemplate = {
+    ...template,
+    is_custom: true,
+    created_at: template.created_at || new Date().toISOString()
+  };
+
+  let updatedList: WorkoutTemplate[];
+  if (existingIdx >= 0) {
+    updatedList = [...list];
+    updatedList[existingIdx] = toSave;
+  } else {
+    updatedList = [toSave, ...list];
+  }
+
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(STORAGE_KEYS.CUSTOM_TEMPLATES, JSON.stringify(updatedList));
+  }
+
+  return toSave;
+}
+
+export async function deleteCustomTemplate(templateId: string): Promise<void> {
+  const list = getStoredCustomTemplates();
+  const updatedList = list.filter(t => t.id !== templateId);
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(STORAGE_KEYS.CUSTOM_TEMPLATES, JSON.stringify(updatedList));
+  }
+}
+
+// --- Workout Templates (Default + Custom) ---
 export async function getTemplates(): Promise<WorkoutTemplate[]> {
+  const customTemplates = getStoredCustomTemplates();
+  let baseTemplates = DEFAULT_TEMPLATES;
+
   try {
     const { data: templates } = await supabase.from('workout_templates').select('*').order('sequence_order');
     const { data: templateExercises } = await supabase.from('workout_template_exercises').select('*, exercise:exercises(*)').order('order_index');
@@ -129,16 +255,24 @@ export async function getTemplates(): Promise<WorkoutTemplate[]> {
         };
       });
 
-      // Append any new default templates (like the new Hypertrophy Pecho+Bíceps Split) not yet in DB
       const missingTemplates = DEFAULT_TEMPLATES.filter(
         dt => !templates.some(t => t.id === dt.id || t.code === dt.code)
       );
-      return [...dbMapped, ...missingTemplates].sort((a, b) => (a.sequence_order || 0) - (b.sequence_order || 0));
+      baseTemplates = [...dbMapped, ...missingTemplates].sort((a, b) => (a.sequence_order || 0) - (b.sequence_order || 0));
     }
   } catch (e) {
     console.warn('Loading default templates', e);
   }
-  return DEFAULT_TEMPLATES;
+
+  // Combine custom templates first (or integrated), then base templates
+  const combined = [...customTemplates];
+  for (const bt of baseTemplates) {
+    if (!combined.some(c => c.id === bt.id)) {
+      combined.push(bt);
+    }
+  }
+
+  return combined;
 }
 
 // --- Workout Sessions & History ---

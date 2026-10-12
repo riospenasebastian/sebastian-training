@@ -12,10 +12,12 @@ import {
   X,
   ExternalLink,
   Sparkles,
-  Info
+  Info,
+  Video
 } from 'lucide-react';
 import { WorkoutTemplate } from '../lib/types';
 import { WARMUP_MOBILITY_ASSETS } from '../lib/data-defaults';
+import { getVideoObjectUrl } from '../lib/media-storage';
 
 interface WarmupModalProps {
   template: WorkoutTemplate;
@@ -35,10 +37,25 @@ export default function WarmupModal({
   firstExerciseName = 'Press Inclinado con Mancuernas',
 }: WarmupModalProps) {
   const [step, setStep] = useState<1 | 2 | 3>(2); // Start on Step 2 (Movilidad Visual) so visual GIFs are seen immediately!
-  const [cardioSeconds, setCardioSeconds] = useState(300); // 5 min
+  const [cardioSeconds, setCardioSeconds] = useState(template.warmup_cardio_min ? template.warmup_cardio_min * 60 : 300);
   const [isCardioRunning, setIsCardioRunning] = useState(false);
-  const [mobilityChecks, setMobilityChecks] = useState<boolean[]>([false, false, false]);
-  const [expandedItems, setExpandedItems] = useState<number[]>([0, 1, 2]); // All 3 warmups open with GIFs visible!
+  const [mobilityChecks, setMobilityChecks] = useState<boolean[]>([]);
+  const [expandedItems, setExpandedItems] = useState<number[]>([0, 1, 2]); // Open with GIFs visible!
+  const [customVideoUrls, setCustomVideoUrls] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    // Load local videos for custom warmup exercises if any
+    if (template.warmup_exercises) {
+      template.warmup_exercises.forEach(async (w) => {
+        if (w.video_storage_key) {
+          const url = await getVideoObjectUrl(w.video_storage_key);
+          if (url) {
+            setCustomVideoUrls((prev) => ({ ...prev, [w.video_storage_key!]: url }));
+          }
+        }
+      });
+    }
+  }, [template]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
@@ -189,93 +206,201 @@ export default function WarmupModal({
 
           {step === 2 && (
             <div className="space-y-3">
-              <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200">
-                <strong>¿Por qué y cómo hacerlos?</strong> Toca cada ejercicio para ver la animación GIF de cómo se ejecuta paso a paso:
-              </div>
-
-              {mobilityItems.map((item, idx) => {
-                const isExpanded = expandedItems.includes(idx);
-                const isChecked = mobilityChecks[idx];
-                return (
-                  <div
-                    key={idx}
-                    className={`rounded-2xl border transition-all overflow-hidden ${
-                      isChecked
-                        ? 'bg-emerald-950/20 border-emerald-500/40'
-                        : isExpanded
-                        ? 'bg-slate-900 border-cyan-500/40'
-                        : 'bg-slate-900/70 border-slate-800'
-                    }`}
-                  >
-                    {/* Item Header */}
-                    <div
-                      onClick={() =>
-                        setExpandedItems((prev) =>
-                          prev.includes(idx) ? prev.filter((i) => i !== idx) : [...prev, idx]
-                        )
-                      }
-                      className="p-3.5 flex items-center justify-between cursor-pointer select-none bg-slate-900/90"
-                    >
-                      <div className="flex items-center gap-3">
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            const next = [...mobilityChecks];
-                            next[idx] = !next[idx];
-                            setMobilityChecks(next);
-                          }}
-                          className="mt-0.5"
-                        >
-                          {isChecked ? (
-                            <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-                          ) : (
-                            <div className="w-5 h-5 rounded-full border-2 border-slate-600 hover:border-cyan-400 transition-colors" />
-                          )}
-                        </button>
-                        <div>
-                          <h4 className="text-xs font-bold text-white">{item.title}</h4>
-                          <span className="text-[10px] text-cyan-400 font-medium">
-                            {isExpanded ? 'Toca para contraer' : 'Toca para ver animación GIF'}
-                          </span>
-                        </div>
-                      </div>
-
-                      <ChevronRight
-                        className={`w-4 h-4 text-slate-500 transition-transform ${
-                          isExpanded ? 'rotate-90 text-cyan-400' : ''
-                        }`}
-                      />
-                    </div>
-
-                    {/* Expanded Visual & GIF */}
-                    {isExpanded && (
-                      <div className="px-4 pb-4 pt-1 border-t border-slate-800 space-y-3">
-                        <div className="flex flex-col items-center justify-center bg-slate-950 rounded-2xl p-2 border border-cyan-500/20 shadow-inner relative">
-                          <img
-                            src={item.gif}
-                            alt={item.title}
-                            className="w-48 h-48 sm:w-56 sm:h-56 object-contain rounded-xl"
-                            loading="eager"
-                          />
-                          <span className="absolute bottom-2 right-2 px-2 py-0.5 rounded-full bg-black/75 backdrop-blur-sm border border-cyan-500/30 text-[9px] text-cyan-300 font-bold">
-                            🔄 Animación en bucle
-                          </span>
-                        </div>
-
-                        <p className="text-xs text-slate-300 leading-relaxed">{item.desc}</p>
-
-                        <div className="p-2.5 rounded-xl bg-cyan-950/30 border border-cyan-500/20 text-[11px] text-cyan-300 flex items-start gap-1.5">
-                          <Sparkles className="w-3.5 h-3.5 text-cyan-400 shrink-0 mt-0.5" />
-                          <span>
-                            <strong>Clave técnica:</strong> {item.cue}
-                          </span>
-                        </div>
-                      </div>
-                    )}
+              {template.warmup_exercises && template.warmup_exercises.length > 0 ? (
+                <>
+                  <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200">
+                    <strong>Calentamiento personalizado del profesor:</strong> Realiza estos ejercicios con barra vacía o peso ligero según la rutina:
                   </div>
-                );
-              })}
+
+                  {template.warmup_exercises.map((w, idx) => {
+                    const isExpanded = expandedItems.includes(idx);
+                    const isChecked = mobilityChecks[idx];
+                    const videoUrl = w.video_storage_key ? customVideoUrls[w.video_storage_key] : null;
+
+                    return (
+                      <div
+                        key={w.id || idx}
+                        className={`rounded-2xl border transition-all overflow-hidden ${
+                          isChecked
+                            ? 'bg-emerald-950/20 border-emerald-500/40'
+                            : isExpanded
+                            ? 'bg-slate-900 border-cyan-500/40'
+                            : 'bg-slate-900/70 border-slate-800'
+                        }`}
+                      >
+                        <div
+                          onClick={() =>
+                            setExpandedItems((prev) =>
+                              prev.includes(idx) ? prev.filter((i) => i !== idx) : [...prev, idx]
+                            )
+                          }
+                          className="p-3.5 flex items-center justify-between cursor-pointer select-none bg-slate-900/90"
+                        >
+                          <div className="flex items-center gap-3">
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const next = [...mobilityChecks];
+                                next[idx] = !next[idx];
+                                setMobilityChecks(next);
+                              }}
+                              className="mt-0.5"
+                            >
+                              {isChecked ? (
+                                <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                              ) : (
+                                <div className="w-5 h-5 rounded-full border-2 border-slate-600 hover:border-cyan-400 transition-colors" />
+                              )}
+                            </button>
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <h4 className="text-xs font-bold text-white">{w.name}</h4>
+                                <span className="px-1.5 py-0.2 rounded text-[9px] bg-amber-500/20 text-amber-300 font-bold">
+                                  {w.sets || 2} series × {w.reps_or_time || '15 reps'}
+                                </span>
+                              </div>
+                              <span className="text-[10px] text-cyan-400 font-medium">
+                                {isExpanded ? 'Toca para contraer' : 'Toca para ver detalles y video'}
+                              </span>
+                            </div>
+                          </div>
+
+                          <ChevronRight
+                            className={`w-4 h-4 text-slate-500 transition-transform ${
+                              isExpanded ? 'rotate-90 text-cyan-400' : ''
+                            }`}
+                          />
+                        </div>
+
+                        {isExpanded && (
+                          <div className="px-4 pb-4 pt-1 border-t border-slate-800 space-y-3">
+                            {videoUrl && (
+                              <div className="rounded-xl overflow-hidden bg-black border border-cyan-500/30">
+                                <video
+                                  src={videoUrl}
+                                  controls
+                                  playsInline
+                                  className="w-full max-h-56 object-contain bg-black"
+                                />
+                              </div>
+                            )}
+
+                            {w.gif_url && !videoUrl && (
+                              <div className="flex flex-col items-center justify-center bg-slate-950 rounded-2xl p-2 border border-cyan-500/20">
+                                <img
+                                  src={w.gif_url}
+                                  alt={w.name}
+                                  className="w-48 h-48 object-contain rounded-xl"
+                                />
+                              </div>
+                            )}
+
+                            {w.notes && (
+                              <div className="p-2.5 rounded-xl bg-cyan-950/30 border border-cyan-500/20 text-[11px] text-cyan-200 flex items-start gap-1.5">
+                                <Sparkles className="w-3.5 h-3.5 text-cyan-400 shrink-0 mt-0.5" />
+                                <span>
+                                  <strong>Indicación del profesor:</strong> {w.notes}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </>
+              ) : (
+                <>
+                  <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200">
+                    <strong>¿Por qué y cómo hacerlos?</strong> Toca cada ejercicio para ver la animación GIF de cómo se ejecuta paso a paso:
+                  </div>
+
+                  {mobilityItems.map((item, idx) => {
+                    const isExpanded = expandedItems.includes(idx);
+                    const isChecked = mobilityChecks[idx];
+                    return (
+                      <div
+                        key={idx}
+                        className={`rounded-2xl border transition-all overflow-hidden ${
+                          isChecked
+                            ? 'bg-emerald-950/20 border-emerald-500/40'
+                            : isExpanded
+                            ? 'bg-slate-900 border-cyan-500/40'
+                            : 'bg-slate-900/70 border-slate-800'
+                        }`}
+                      >
+                        {/* Item Header */}
+                        <div
+                          onClick={() =>
+                            setExpandedItems((prev) =>
+                              prev.includes(idx) ? prev.filter((i) => i !== idx) : [...prev, idx]
+                            )
+                          }
+                          className="p-3.5 flex items-center justify-between cursor-pointer select-none bg-slate-900/90"
+                        >
+                          <div className="flex items-center gap-3">
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const next = [...mobilityChecks];
+                                next[idx] = !next[idx];
+                                setMobilityChecks(next);
+                              }}
+                              className="mt-0.5"
+                            >
+                              {isChecked ? (
+                                <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                              ) : (
+                                <div className="w-5 h-5 rounded-full border-2 border-slate-600 hover:border-cyan-400 transition-colors" />
+                              )}
+                            </button>
+                            <div>
+                              <h4 className="text-xs font-bold text-white">{item.title}</h4>
+                              <span className="text-[10px] text-cyan-400 font-medium">
+                                {isExpanded ? 'Toca para contraer' : 'Toca para ver animación GIF'}
+                              </span>
+                            </div>
+                          </div>
+
+                          <ChevronRight
+                            className={`w-4 h-4 text-slate-500 transition-transform ${
+                              isExpanded ? 'rotate-90 text-cyan-400' : ''
+                            }`}
+                          />
+                        </div>
+
+                        {/* Expanded Visual & GIF */}
+                        {isExpanded && (
+                          <div className="px-4 pb-4 pt-1 border-t border-slate-800 space-y-3">
+                            <div className="flex flex-col items-center justify-center bg-slate-950 rounded-2xl p-2 border border-cyan-500/20 shadow-inner relative">
+                              <img
+                                src={item.gif}
+                                alt={item.title}
+                                className="w-48 h-48 sm:w-56 sm:h-56 object-contain rounded-xl"
+                                loading="eager"
+                              />
+                              <span className="absolute bottom-2 right-2 px-2 py-0.5 rounded-full bg-black/75 backdrop-blur-sm border border-cyan-500/30 text-[9px] text-cyan-300 font-bold">
+                                🔄 Animación en bucle
+                              </span>
+                            </div>
+
+                            <p className="text-xs text-slate-300 leading-relaxed">{item.desc}</p>
+
+                            <div className="p-2.5 rounded-xl bg-cyan-950/30 border border-cyan-500/20 text-[11px] text-cyan-300 flex items-start gap-1.5">
+                              <Sparkles className="w-3.5 h-3.5 text-cyan-400 shrink-0 mt-0.5" />
+                              <span>
+                                <strong>Clave técnica:</strong> {item.cue}
+                              </span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </>
+              )}
             </div>
           )}
 

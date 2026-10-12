@@ -31,6 +31,9 @@ interface HomeViewProps {
   onOpenWarmup: (template: WorkoutTemplate) => void;
   onSaveMeasurement: (weight: number, waist?: number) => void;
   onNavigateTab: (tab: 'workout' | 'progress' | 'more') => void;
+  onOpenCreateRoutine?: () => void;
+  onOpenEditRoutine?: (template: WorkoutTemplate) => void;
+  onOpenCreateExercise?: () => void;
 }
 
 export default function HomeView({
@@ -45,6 +48,9 @@ export default function HomeView({
   onOpenWarmup,
   onSaveMeasurement,
   onNavigateTab,
+  onOpenCreateRoutine,
+  onOpenEditRoutine,
+  onOpenCreateExercise,
 }: HomeViewProps) {
   const [timeMode, setTimeMode] = useState<'normal' | '45min' | '30min'>('normal');
   const [checkinWeight, setCheckinWeight] = useState(latestMeasurement ? String(latestMeasurement.weight_kg) : '74.5');
@@ -52,19 +58,26 @@ export default function HomeView({
   const [showCheckinSuccess, setShowCheckinSuccess] = useState(false);
   const [isGuideOpen, setIsGuideOpen] = useState(false);
 
-  const [selectedSplitCategory, setSelectedSplitCategory] = useState<'hypertrophy' | 'upper_lower'>('hypertrophy');
-  const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
-
   // Group templates by split
+  const customTemplates = templates.filter((t) => t.is_custom);
   const hypertrophyTemplates = templates.filter((t) =>
-    ['pecho_biceps', 'espalda_triceps', 'hombros_brazos', 'pierna_completa', 'torso_bombeo'].includes(t.code)
+    ['pecho_biceps', 'espalda_triceps', 'hombros_brazos', 'pierna_completa', 'torso_bombeo'].includes(t.code) && !t.is_custom
   );
   const upperLowerTemplates = templates.filter((t) =>
-    ['upper_a', 'lower_a', 'upper_b', 'lower_b'].includes(t.code)
+    ['upper_a', 'lower_a', 'upper_b', 'lower_b'].includes(t.code) && !t.is_custom
   );
 
+  const [selectedSplitCategory, setSelectedSplitCategory] = useState<'custom' | 'hypertrophy' | 'upper_lower'>(
+    customTemplates.length > 0 ? 'custom' : 'hypertrophy'
+  );
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
+
   const activeSplitList =
-    selectedSplitCategory === 'hypertrophy'
+    selectedSplitCategory === 'custom'
+      ? customTemplates.length > 0
+        ? customTemplates
+        : templates
+      : selectedSplitCategory === 'hypertrophy'
       ? hypertrophyTemplates.length > 0
         ? hypertrophyTemplates
         : templates
@@ -164,22 +177,67 @@ export default function HomeView({
         </div>
       )}
 
-      {/* SPLIT FOCUS SELECTOR: Hipertrofia (1 día Pierna) vs Torso/Pierna */}
+      {/* QUICK ACTIONS: CREATE ROUTINE / RECORD EXERCISE FROM COACH */}
+      <div className="grid grid-cols-2 gap-2">
+        <button
+          onClick={() => onOpenCreateRoutine?.()}
+          className="p-3 rounded-2xl bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-400/40 hover:border-cyan-400 text-left flex items-center gap-2.5 transition-all shadow-md group active:scale-98"
+        >
+          <div className="p-2 rounded-xl bg-cyan-500/20 text-cyan-400 group-hover:scale-110 transition-transform">
+            <Sparkles className="w-4 h-4" />
+          </div>
+          <div>
+            <span className="text-xs font-black text-white block leading-tight">+ Rutina del Profe</span>
+            <span className="text-[10px] text-cyan-300">Crear o personalizar</span>
+          </div>
+        </button>
+
+        <button
+          onClick={() => onOpenCreateExercise?.()}
+          className="p-3 rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-cyan-400/40 text-left flex items-center gap-2.5 transition-all shadow-sm group active:scale-98"
+        >
+          <div className="p-2 rounded-xl bg-purple-500/20 text-purple-300 group-hover:scale-110 transition-transform">
+            <Dumbbell className="w-4 h-4" />
+          </div>
+          <div>
+            <span className="text-xs font-black text-white block leading-tight">📹 Grabar Ejercicio</span>
+            <span className="text-[10px] text-slate-400">Video con el profe</span>
+          </div>
+        </button>
+      </div>
+
+      {/* SPLIT FOCUS SELECTOR */}
       <div className="p-1 rounded-2xl bg-slate-900 border border-slate-800 flex items-center gap-1 text-xs">
+        {customTemplates.length > 0 && (
+          <button
+            type="button"
+            onClick={() => {
+              setSelectedSplitCategory('custom');
+              setSelectedTemplateId(customTemplates[0]?.id || null);
+            }}
+            className={`flex-1 py-2 px-2 rounded-xl font-bold transition-all text-center flex items-center justify-center gap-1 ${
+              selectedSplitCategory === 'custom'
+                ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <span>⭐ Profe ({customTemplates.length})</span>
+          </button>
+        )}
         <button
           type="button"
           onClick={() => {
             setSelectedSplitCategory('hypertrophy');
             setSelectedTemplateId(null);
           }}
-          className={`flex-1 py-2 px-2.5 rounded-xl font-bold transition-all text-center flex items-center justify-center gap-1.5 ${
+          className={`flex-1 py-2 px-2 rounded-xl font-bold transition-all text-center flex items-center justify-center gap-1 ${
             selectedSplitCategory === 'hypertrophy'
               ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20'
               : 'text-slate-400 hover:text-white'
           }`}
         >
           <Sparkles className="w-3.5 h-3.5" />
-          <span>Hipertrofia & Bombeo (1x Pierna)</span>
+          <span>Hipertrofia</span>
         </button>
         <button
           type="button"
@@ -187,13 +245,13 @@ export default function HomeView({
             setSelectedSplitCategory('upper_lower');
             setSelectedTemplateId(null);
           }}
-          className={`py-2 px-2.5 rounded-xl font-bold transition-all text-center flex items-center justify-center gap-1.5 ${
+          className={`py-2 px-2.5 rounded-xl font-bold transition-all text-center flex items-center justify-center gap-1 ${
             selectedSplitCategory === 'upper_lower'
               ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20'
               : 'text-slate-400 hover:text-white'
           }`}
         >
-          <span>Torso / Pierna</span>
+          <span>Torso/Pierna</span>
         </button>
       </div>
 
@@ -222,7 +280,7 @@ export default function HomeView({
                     isSelected ? 'text-cyan-300' : 'text-slate-300'
                   }`}
                 >
-                  {tpl.name.split(':')[0] || `Día ${idx + 1}`}
+                  {tpl.is_custom ? '⭐ ' : ''}{tpl.name.split(':')[0] || `Día ${idx + 1}`}
                 </span>
               </div>
               <span
@@ -244,10 +302,20 @@ export default function HomeView({
           <div className="absolute top-0 right-0 -mr-16 -mt-16 w-56 h-56 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none" />
 
           <div className="flex items-start justify-between relative z-10">
-            <div>
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 text-[10px] font-bold border border-cyan-500/30 mb-1.5">
-                <Sparkles className="w-3 h-3" /> Rutina Lista para Entrenar
-              </span>
+            <div className="flex-1 mr-2">
+              <div className="flex items-center gap-2 mb-1.5">
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 text-[10px] font-bold border border-cyan-500/30">
+                  <Sparkles className="w-3 h-3" /> {currentTemplate.is_custom ? 'Rutina del Profe' : 'Rutina Lista para Entrenar'}
+                </span>
+                {currentTemplate.is_custom && onOpenEditRoutine && (
+                  <button
+                    onClick={() => onOpenEditRoutine(currentTemplate)}
+                    className="text-[10px] text-cyan-400 font-bold hover:underline"
+                  >
+                    ✏️ Editar
+                  </button>
+                )}
+              </div>
               <h2 className="text-xl font-black text-white tracking-tight">
                 {currentTemplate.name}
               </h2>
@@ -343,7 +411,11 @@ export default function HomeView({
               className="w-full py-3 rounded-xl bg-orange-950/20 border border-orange-500/30 text-xs font-bold text-orange-300 hover:text-orange-200 hover:bg-orange-950/30 flex items-center justify-center gap-2 transition-all shadow-sm"
             >
               <Flame className="w-4 h-4 text-orange-400 animate-pulse" />
-              <span>Ver Calentamiento Visual (Cardio + Mancuernas 1-2kg - GIFs)</span>
+              <span>
+                {currentTemplate.warmup_exercises && currentTemplate.warmup_exercises.length > 0
+                  ? `Ver Calentamiento del Profe (${currentTemplate.warmup_exercises.length} ejercicios con técnica)`
+                  : 'Ver Calentamiento Visual (Cardio + Mancuernas 1-2kg - GIFs)'}
+              </span>
             </button>
           </div>
         </div>

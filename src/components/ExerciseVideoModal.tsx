@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Exercise } from '../lib/types';
-import { X, ExternalLink, Sparkles, AlertCircle, HeartHandshake, Info, Play, Film, Layers } from 'lucide-react';
+import { X, ExternalLink, Sparkles, AlertCircle, HeartHandshake, Info, Play, Film, Layers, Video } from 'lucide-react';
 import MuscleMap from './MuscleMap';
 import { getVisualStepsForExercise } from '../lib/exercise-steps';
+import { getVideoObjectUrl } from '../lib/media-storage';
 
 interface ExerciseVideoModalProps {
   exercise: Exercise;
@@ -19,7 +20,30 @@ export default function ExerciseVideoModal({
   onClose,
   beginnerMode = true,
 }: ExerciseVideoModalProps) {
-  const [activeMediaTab, setActiveMediaTab] = useState<'gif' | 'video' | 'muscle'>('gif');
+  const [activeMediaTab, setActiveMediaTab] = useState<'gif' | 'video' | 'muscle' | 'local_video'>(
+    exercise.video_storage_key ? 'local_video' : exercise.gif_url ? 'gif' : 'video'
+  );
+  const [localVideoUrl, setLocalVideoUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    if (exercise.video_storage_key) {
+      getVideoObjectUrl(exercise.video_storage_key).then((url) => {
+        if (isMounted && url) {
+          setLocalVideoUrl(url);
+          setActiveMediaTab('local_video');
+        }
+      });
+    } else {
+      setLocalVideoUrl(null);
+      if (!exercise.gif_url && exercise.video_url) {
+        setActiveMediaTab('video');
+      }
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, [exercise]);
 
   if (!isOpen) return null;
 
@@ -38,11 +62,11 @@ export default function ExerciseVideoModal({
           <div>
             <div className="flex items-center gap-2">
               <span className="px-2 py-0.5 rounded text-[10px] font-black bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
-                Tier {exercise.ranking_tier}
+                {exercise.is_custom ? 'Personalizado' : `Tier ${exercise.ranking_tier}`}
               </span>
               <h3 className="text-base font-bold text-white">{exercise.name}</h3>
             </div>
-            <p className="text-xs text-slate-400 capitalize">{exercise.movement_pattern.replace('_', ' ')}</p>
+            <p className="text-xs text-slate-400 capitalize">{exercise.movement_pattern?.replace('_', ' ') || exercise.primary_muscle_group}</p>
           </div>
           <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-white rounded-lg">
             <X className="w-5 h-5" />
@@ -50,7 +74,21 @@ export default function ExerciseVideoModal({
         </div>
 
         {/* Media Switcher Tabs */}
-        <div className="grid grid-cols-3 border-b border-slate-800 text-xs font-semibold bg-slate-950">
+        <div className={`grid ${localVideoUrl ? 'grid-cols-4' : 'grid-cols-3'} border-b border-slate-800 text-xs font-semibold bg-slate-950`}>
+          {localVideoUrl && (
+            <button
+              onClick={() => setActiveMediaTab('local_video')}
+              className={`py-2.5 flex items-center justify-center gap-1.5 border-b-2 transition-all ${
+                activeMediaTab === 'local_video'
+                  ? 'border-cyan-400 text-cyan-400 bg-cyan-500/10'
+                  : 'border-transparent text-slate-400 hover:text-white'
+              }`}
+            >
+              <Video className="w-4 h-4 text-cyan-400 animate-pulse" />
+              <span>Video Profe</span>
+            </button>
+          )}
+
           <button
             onClick={() => setActiveMediaTab('gif')}
             className={`py-2.5 flex items-center justify-center gap-1.5 border-b-2 transition-all ${
@@ -72,7 +110,7 @@ export default function ExerciseVideoModal({
             }`}
           >
             <Play className="w-4 h-4" />
-            <span>Video YouTube</span>
+            <span>YouTube</span>
           </button>
 
           <button
@@ -90,6 +128,33 @@ export default function ExerciseVideoModal({
 
         {/* Scrollable Body */}
         <div className="p-5 overflow-y-auto space-y-4 flex-1">
+          {/* LOCAL RECORDED VIDEO */}
+          {activeMediaTab === 'local_video' && localVideoUrl && (
+            <div className="space-y-3">
+              <div className="w-full rounded-2xl overflow-hidden bg-black border border-cyan-500/30 relative shadow-xl">
+                <video
+                  src={localVideoUrl}
+                  controls
+                  playsInline
+                  autoPlay
+                  loop
+                  className="w-full max-h-72 object-contain bg-black"
+                />
+              </div>
+
+              {exercise.cues && (
+                <div className="p-3.5 rounded-2xl bg-cyan-950/40 border border-cyan-500/30 space-y-1">
+                  <span className="text-xs font-bold text-cyan-300 flex items-center gap-1.5">
+                    <Sparkles className="w-4 h-4 text-cyan-400" />
+                    <span>Indicaciones Clave del Profesor:</span>
+                  </span>
+                  <p className="text-xs text-slate-200 leading-relaxed font-medium">
+                    {exercise.cues}
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
           {/* MEDIA DISPLAY */}
           {activeMediaTab === 'gif' && (
             <div className="flex flex-col items-center space-y-4">
