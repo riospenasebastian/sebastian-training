@@ -30,6 +30,7 @@ interface RoutineEditorModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSaveRoutine: (template: WorkoutTemplate) => void;
+  onDeleteRoutine?: (templateId: string) => void;
   initialTemplate?: WorkoutTemplate | null;
   allExercises: Exercise[];
   onAddNewCustomExercise: (exercise: Exercise) => void;
@@ -52,6 +53,7 @@ export default function RoutineEditorModal({
   isOpen,
   onClose,
   onSaveRoutine,
+  onDeleteRoutine,
   initialTemplate,
   allExercises,
   onAddNewCustomExercise,
@@ -226,23 +228,23 @@ export default function RoutineEditorModal({
 
   return (
     <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4">
-      <div className="w-full max-w-xl rounded-t-3xl sm:rounded-3xl bg-[#121622] border border-cyan-500/20 max-h-[92vh] flex flex-col overflow-hidden shadow-2xl animate-in fade-in duration-200">
+      <div className="w-full max-w-xl rounded-t-3xl sm:rounded-3xl bg-[#0E1016] border border-zinc-800 max-h-[92vh] flex flex-col overflow-hidden shadow-2xl animate-in fade-in duration-200">
         {/* Header */}
-        <div className="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/60">
+        <div className="p-4 border-b border-zinc-800 flex items-center justify-between bg-zinc-900/60">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400">
+            <div className="p-2 rounded-xl bg-[#CCFF00]/15 border border-[#CCFF00]/30 text-[#CCFF00]">
               <Dumbbell className="w-5 h-5" />
             </div>
             <div>
               <h3 className="text-base font-bold text-white">
                 {initialTemplate ? 'Editar Rutina' : 'Nueva Rutina Personalizada'}
               </h3>
-              <p className="text-xs text-slate-400">Configura los grupos musculares, calentamiento y ejercicios</p>
+              <p className="text-xs text-zinc-400">Configura los grupos musculares, calentamiento y ejercicios</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-white rounded-lg transition-colors"
+            className="p-1.5 text-zinc-400 hover:text-white rounded-lg transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -251,10 +253,10 @@ export default function RoutineEditorModal({
         {/* Content Form */}
         <form onSubmit={handleSave} className="p-4 overflow-y-auto space-y-5 flex-1">
           {/* General Routine Info & Muscle Groups */}
-          <div className="space-y-3.5 p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800">
+          <div className="space-y-3.5 p-3.5 rounded-2xl bg-zinc-900/60 border border-zinc-800">
             <div>
-              <label className="text-xs font-bold text-slate-200 block mb-1">
-                Nombre de la Rutina <span className="text-cyan-400">*</span>
+              <label className="text-xs font-bold text-zinc-200 block mb-1">
+                Nombre de la Rutina <span className="text-[#CCFF00]">*</span>
               </label>
               <input
                 type="text"
@@ -262,17 +264,17 @@ export default function RoutineEditorModal({
                 placeholder="Ej: Pecho & Bíceps, Pierna Completa, Hombros..."
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-black/60 border border-zinc-800 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-[#CCFF00]"
               />
             </div>
 
             {/* Muscle Groups Selection Chips */}
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="text-[11px] font-bold uppercase tracking-wider text-slate-300">
+                <label className="text-[11px] font-bold uppercase tracking-wider text-zinc-300">
                   Grupos Musculares de esta Rutina:
                 </label>
-                <span className="text-[10px] text-cyan-400 font-semibold">
+                <span className="text-[10px] text-[#CCFF00] font-semibold">
                   {selectedMuscles.length > 0 ? `${selectedMuscles.length} seleccionados` : 'Toca para elegir'}
                 </span>
               </div>
@@ -297,8 +299,8 @@ export default function RoutineEditorModal({
                       }}
                       className={`px-2.5 py-1 rounded-xl text-xs font-bold transition-all border ${
                         isSel
-                          ? 'bg-cyan-500 text-slate-950 border-cyan-400 shadow-sm shadow-cyan-500/20'
-                          : 'bg-slate-950/80 text-slate-400 border-slate-800 hover:text-white hover:border-slate-700'
+                          ? 'bg-[#CCFF00] text-black border-[#CCFF00] shadow-sm shadow-[#CCFF00]/20'
+                          : 'bg-zinc-900/80 text-zinc-400 border-zinc-800 hover:text-white hover:border-zinc-700'
                       }`}
                     >
                       {isSel ? `✓ ${m}` : `+ ${m}`}
@@ -318,12 +320,12 @@ export default function RoutineEditorModal({
                   placeholder="Ej: Foco pectoral superior, bíceps pesado"
                   value={targetFocus}
                   onChange={(e) => setTargetFocus(e.target.value)}
-                  className="w-full px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400"
+                  className="w-full px-3 py-2 rounded-xl bg-black/60 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#CCFF00]"
                 />
               </div>
 
               <div>
-                <label className="text-[11px] font-semibold text-slate-400 block mb-1">
+                <label className="text-[11px] font-semibold text-zinc-400 block mb-1">
                   Duración aprox. (min)
                 </label>
                 <input
@@ -332,13 +334,13 @@ export default function RoutineEditorModal({
                   max={180}
                   value={estimatedDuration}
                   onChange={(e) => setEstimatedDuration(parseInt(e.target.value) || 60)}
-                  className="w-full px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-cyan-400"
+                  className="w-full px-3 py-2 rounded-xl bg-black/60 border border-zinc-800 text-xs text-white focus:outline-none focus:border-[#CCFF00]"
                 />
               </div>
             </div>
 
             <div>
-              <label className="text-[11px] font-semibold text-slate-400 block mb-1">
+              <label className="text-[11px] font-semibold text-zinc-400 block mb-1">
                 Observaciones generales de la rutina
               </label>
               <input
@@ -346,7 +348,7 @@ export default function RoutineEditorModal({
                 placeholder="Ej: Descansar bien entre series pesadas, cuidar la técnica"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400"
+                className="w-full px-3 py-2 rounded-xl bg-black/60 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#CCFF00]"
               />
             </div>
           </div>
@@ -409,8 +411,8 @@ export default function RoutineEditorModal({
                           className="bg-transparent font-bold text-xs text-white focus:outline-none focus:underline truncate"
                         />
                         {(w.video_storage_key || w.video_url) && (
-                          <span className="px-1.5 py-0.2 rounded text-[9px] bg-cyan-500/20 text-cyan-400 font-bold shrink-0 flex items-center gap-0.5">
-                            <Video className="w-2.5 h-2.5" /> Video
+                          <span className="px-1.5 py-0.2 rounded text-[9px] bg-zinc-800 text-zinc-300 font-bold shrink-0 flex items-center gap-0.5">
+                            <Video className="w-2.5 h-2.5 text-[#CCFF00]" /> Video
                           </span>
                         )}
                       </div>
@@ -503,17 +505,17 @@ export default function RoutineEditorModal({
           </div>
 
           {/* SECTION 2: EJERCICIOS PRINCIPALES */}
-          <div className="space-y-3 p-3.5 rounded-2xl bg-cyan-500/5 border border-cyan-500/20">
+          <div className="space-y-3 p-3.5 rounded-2xl bg-zinc-900/60 border border-zinc-800">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="p-1.5 rounded-lg bg-cyan-500/20 text-cyan-400">
+                <div className="p-1.5 rounded-lg bg-[#CCFF00]/15 text-[#CCFF00]">
                   <Dumbbell className="w-4 h-4" />
                 </div>
                 <div>
                   <h4 className="text-xs font-black text-white uppercase tracking-wider">
                     2. Ejercicios Principales ({mainExercises.length})
                   </h4>
-                  <p className="text-[10px] text-slate-400">Series efectivas, pesos, repeticiones y descansos</p>
+                  <p className="text-[10px] text-zinc-400">Series efectivas, pesos, repeticiones y descansos</p>
                 </div>
               </div>
             </div>
@@ -521,7 +523,7 @@ export default function RoutineEditorModal({
             {/* Main Exercises List */}
             <div className="space-y-2">
               {mainExercises.length === 0 ? (
-                <div className="py-6 text-center text-slate-500 text-xs border border-dashed border-slate-800 rounded-xl">
+                <div className="py-6 text-center text-zinc-500 text-xs border border-dashed border-zinc-800 rounded-xl">
                   Aún no has agregado ejercicios a esta rutina.
                 </div>
               ) : (
@@ -530,25 +532,25 @@ export default function RoutineEditorModal({
                   return (
                     <div
                       key={te.id || idx}
-                      className="p-3 rounded-xl bg-slate-950/90 border border-slate-800 space-y-2.5"
+                      className="p-3 rounded-xl bg-black/60 border border-zinc-800 space-y-2.5"
                     >
                       {/* Title & reorder row */}
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2 min-w-0">
-                          <span className="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-400 text-[10px] font-black flex items-center justify-center shrink-0">
+                          <span className="w-5 h-5 rounded-full bg-[#CCFF00]/15 text-[#CCFF00] text-[10px] font-black flex items-center justify-center shrink-0 font-mono">
                             {idx + 1}
                           </span>
                           <span className="font-bold text-xs text-white truncate">
                             {ex?.name || te.exercise_id}
                           </span>
                           {ex?.is_custom && (
-                            <span className="px-1.5 py-0.2 rounded text-[9px] bg-purple-500/20 text-purple-300 font-bold shrink-0">
+                            <span className="px-1.5 py-0.2 rounded text-[9px] bg-purple-500/20 text-purple-300 font-bold shrink-0 border border-purple-500/30">
                               Personalizado
                             </span>
                           )}
                           {(ex?.video_storage_key || ex?.video_url) && (
-                            <span className="px-1.5 py-0.2 rounded text-[9px] bg-cyan-500/20 text-cyan-400 font-bold shrink-0 flex items-center gap-0.5">
-                              <Video className="w-2.5 h-2.5" /> Video
+                            <span className="px-1.5 py-0.2 rounded text-[9px] bg-zinc-800 text-zinc-300 font-bold shrink-0 flex items-center gap-0.5">
+                              <Video className="w-2.5 h-2.5 text-[#CCFF00]" /> Video
                             </span>
                           )}
                         </div>
@@ -666,7 +668,7 @@ export default function RoutineEditorModal({
                               prev.map((item, i) => (i === idx ? { ...item, special_notes: val } : item))
                             );
                           }}
-                          className="w-full px-2.5 py-1.5 bg-slate-900 rounded-lg border border-slate-800 text-[11px] text-slate-300 placeholder-slate-600 focus:outline-none focus:border-cyan-500/50"
+                          className="w-full px-2.5 py-1.5 bg-zinc-950 rounded-lg border border-zinc-800 text-[11px] text-zinc-300 placeholder-zinc-600 focus:outline-none focus:border-[#CCFF00]"
                         />
                       </div>
                     </div>
@@ -680,9 +682,9 @@ export default function RoutineEditorModal({
               <button
                 type="button"
                 onClick={() => setExercisePickerMode('main')}
-                className="py-2.5 px-3 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-cyan-400/40 text-cyan-300 font-bold text-xs flex items-center justify-center gap-1.5 transition-all"
+                className="py-2.5 px-3 rounded-xl bg-zinc-950 border border-zinc-800 hover:border-[#CCFF00]/40 text-zinc-200 hover:text-[#CCFF00] font-bold text-xs flex items-center justify-center gap-1.5 transition-all"
               >
-                <Plus className="w-3.5 h-3.5" />
+                <Plus className="w-3.5 h-3.5 text-[#CCFF00]" />
                 <span>De Biblioteca</span>
               </button>
 
@@ -692,32 +694,48 @@ export default function RoutineEditorModal({
                   setCustomExTargetSection('main');
                   setIsCustomExModalOpen(true);
                 }}
-                className="py-2.5 px-3 rounded-xl bg-cyan-500/20 border border-cyan-500/40 hover:bg-cyan-500/30 text-cyan-200 font-bold text-xs flex items-center justify-center gap-1.5 transition-all"
+                className="py-2.5 px-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-[#CCFF00]/40 text-zinc-200 hover:text-[#CCFF00] font-bold text-xs flex items-center justify-center gap-1.5 transition-all"
               >
-                <Camera className="w-3.5 h-3.5" />
+                <Camera className="w-3.5 h-3.5 text-[#CCFF00]" />
                 <span>Crear con Video</span>
               </button>
             </div>
           </div>
 
-          {/* Submit Button */}
-          <div className="pt-2">
+          {/* Submit and Delete Action Buttons */}
+          <div className="pt-2 flex items-center gap-2">
+            {initialTemplate && onDeleteRoutine && (initialTemplate.is_custom || initialTemplate.id.startsWith('custom_') || !['upper_a', 'lower_a', 'upper_b', 'lower_b'].includes(initialTemplate.id)) && (
+              <button
+                type="button"
+                onClick={() => {
+                  if (confirm(`¿Eliminar la rutina personalizada "${initialTemplate.name}"?`)) {
+                    onDeleteRoutine(initialTemplate.id);
+                    onClose();
+                  }
+                }}
+                className="py-3 px-3.5 rounded-2xl border border-red-500/40 hover:bg-red-500/10 text-red-400 font-bold text-xs flex items-center justify-center gap-1.5 transition-all active:scale-95 shrink-0"
+              >
+                <Trash2 className="w-4 h-4" />
+                <span>Eliminar Rutina</span>
+              </button>
+            )}
+
             <button
               type="submit"
-              className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-slate-950 font-black text-sm shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-2 transition-all"
+              className="flex-1 py-3.5 rounded-2xl bg-[#CCFF00] hover:bg-[#B8E600] text-black font-black text-xs uppercase tracking-wider shadow-lg shadow-[#CCFF00]/15 flex items-center justify-center gap-2 transition-all active:scale-98"
             >
-              <CheckCircle2 className="w-5 h-5" />
-              <span>Guardar Rutina Completa</span>
+              <CheckCircle2 className="w-4 h-4 stroke-[2.5]" />
+              <span>Guardar Rutina</span>
             </button>
           </div>
         </form>
 
         {/* SUBMODAL: EXERCISE PICKER FROM LIBRARY */}
         {exercisePickerMode && (
-          <div className="absolute inset-0 z-50 bg-[#121622] flex flex-col animate-in fade-in">
-            <div className="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/90">
+          <div className="absolute inset-0 z-50 bg-[#0E1016] flex flex-col animate-in fade-in">
+            <div className="p-4 border-b border-zinc-800 flex items-center justify-between bg-zinc-900/90">
               <div className="flex items-center gap-2">
-                <Dumbbell className="w-5 h-5 text-cyan-400" />
+                <Dumbbell className="w-5 h-5 text-[#CCFF00]" />
                 <h4 className="text-sm font-bold text-white">
                   {exercisePickerMode === 'warmup'
                     ? 'Seleccionar para Calentamiento'
@@ -726,22 +744,22 @@ export default function RoutineEditorModal({
               </div>
               <button
                 onClick={() => setExercisePickerMode(null)}
-                className="p-1.5 text-slate-400 hover:text-white"
+                className="p-1.5 text-zinc-400 hover:text-white"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Search & Muscle Filters */}
-            <div className="p-3 border-b border-slate-800 space-y-2 bg-slate-950/60">
+            <div className="p-3 border-b border-zinc-800 space-y-2 bg-[#090A0D]">
               <div className="relative">
-                <Search className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
+                <Search className="w-4 h-4 text-zinc-500 absolute left-3 top-2.5" />
                 <input
                   type="text"
                   placeholder="Buscar ejercicio..."
                   value={pickerSearchQuery}
                   onChange={(e) => setPickerSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500"
+                  className="w-full pl-9 pr-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#CCFF00]"
                 />
               </div>
 
@@ -758,10 +776,10 @@ export default function RoutineEditorModal({
                   <button
                     key={m.id}
                     onClick={() => setPickerMuscleFilter(m.id)}
-                    className={`px-2.5 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
+                    className={`px-2.5 py-1 rounded-xl text-xs font-bold whitespace-nowrap transition-all border ${
                       pickerMuscleFilter === m.id
-                        ? 'bg-cyan-500 text-slate-950 shadow-sm'
-                        : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                        ? 'bg-[#CCFF00] text-black border-[#CCFF00] shadow-sm'
+                        : 'bg-zinc-900 text-zinc-400 hover:text-white border-zinc-800'
                     }`}
                   >
                     {m.label}
@@ -776,38 +794,38 @@ export default function RoutineEditorModal({
                 <button
                   key={ex.id}
                   onClick={() => handleSelectExerciseFromPicker(ex)}
-                  className="w-full p-3 rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-cyan-500/40 flex items-center justify-between text-left group transition-all"
+                  className="w-full p-3 rounded-2xl bg-zinc-900/60 border border-zinc-850 hover:border-[#CCFF00]/40 flex items-center justify-between text-left group transition-all"
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     {ex.gif_url ? (
                       <img
                         src={ex.gif_url}
                         alt={ex.name}
-                        className="w-12 h-12 rounded-xl object-contain bg-slate-950 p-1 border border-slate-800 shrink-0"
+                        className="w-12 h-12 rounded-xl object-contain bg-black p-1 border border-zinc-800 shrink-0"
                       />
                     ) : (
-                      <div className="w-12 h-12 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center text-cyan-400 shrink-0">
+                      <div className="w-12 h-12 rounded-xl bg-black border border-zinc-800 flex items-center justify-center text-[#CCFF00] shrink-0">
                         <Dumbbell className="w-5 h-5" />
                       </div>
                     )}
                     <div className="min-w-0">
                       <div className="flex items-center gap-1.5 mb-0.5">
-                        <span className="text-xs font-bold text-white group-hover:text-cyan-300 truncate">
+                        <span className="text-xs font-bold text-white group-hover:text-[#CCFF00] truncate">
                           {ex.name}
                         </span>
                         {ex.is_custom && (
-                          <span className="px-1.5 py-0.2 rounded text-[9px] bg-purple-500/20 text-purple-300 font-bold shrink-0">
+                          <span className="px-1.5 py-0.2 rounded text-[9px] bg-purple-500/20 text-purple-300 font-bold shrink-0 border border-purple-500/30">
                             Personalizado
                           </span>
                         )}
                       </div>
-                      <p className="text-[10px] text-slate-400 capitalize">
+                      <p className="text-[10px] text-zinc-400 capitalize">
                         {ex.primary_muscle_group} • {ex.equipment_id.replace('_', ' ')}
                       </p>
                     </div>
                   </div>
 
-                  <div className="p-1.5 rounded-lg bg-cyan-500/10 text-cyan-400 group-hover:bg-cyan-500 group-hover:text-slate-950 transition-colors shrink-0 ml-2">
+                  <div className="p-1.5 rounded-lg bg-zinc-800 text-zinc-300 group-hover:bg-[#CCFF00] group-hover:text-black transition-colors shrink-0 ml-2">
                     <Plus className="w-4 h-4" />
                   </div>
                 </button>

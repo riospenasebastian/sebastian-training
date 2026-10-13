@@ -152,21 +152,21 @@ export default function CustomExerciseModal({
 
   return (
     <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4">
-      <div className="w-full max-w-lg rounded-t-3xl sm:rounded-3xl bg-[#121622] border border-cyan-500/20 max-h-[90vh] flex flex-col overflow-hidden shadow-2xl animate-in fade-in duration-200">
+      <div className="w-full max-w-lg rounded-t-3xl sm:rounded-3xl bg-[#111217] border border-white/[0.08] max-h-[90vh] flex flex-col overflow-hidden shadow-2xl animate-in fade-in duration-200">
         {/* Header */}
-        <div className="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/60">
+        <div className="p-4 border-b border-zinc-800 flex items-center justify-between bg-[#0C0D11]">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400">
+            <div className="p-2 rounded-xl bg-[#CCFF00]/15 border border-[#CCFF00]/30 text-[#CCFF00]">
               <Camera className="w-5 h-5" />
             </div>
             <div>
               <h3 className="text-base font-bold text-white">Nuevo Ejercicio Personalizado</h3>
-              <p className="text-xs text-slate-400">Graba la técnica del profe o guárdalo para tus rutinas</p>
+              <p className="text-xs text-zinc-400">Graba la técnica o guárdalo para tus rutinas</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-white rounded-lg transition-colors"
+            className="p-1.5 text-zinc-400 hover:text-white rounded-lg transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -176,9 +176,9 @@ export default function CustomExerciseModal({
         <form onSubmit={handleSubmit} className="p-4 overflow-y-auto space-y-4 flex-1">
           {/* Exercise Name */}
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+            <label className="text-xs font-bold text-zinc-200 flex items-center gap-1.5">
               <span>Nombre del Ejercicio</span>
-              <span className="text-cyan-400">*</span>
+              <span className="text-[#CCFF00]">*</span>
             </label>
             <input
               type="text"
@@ -186,13 +186,13 @@ export default function CustomExerciseModal({
               placeholder="Ej: Bíceps 21 con barra Z, Press en máquina Smith..."
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-2xl bg-slate-900/90 border border-slate-700/80 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
+              className="w-full px-3.5 py-2.5 rounded-2xl bg-zinc-900 border border-zinc-800 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-[#CCFF00]"
             />
           </div>
 
           {/* Muscle Group */}
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-slate-200">Grupo Muscular Principal</label>
+            <label className="text-xs font-bold text-zinc-200">Grupo Muscular Principal</label>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {muscleOptions.map((m) => (
                 <button
@@ -201,8 +201,8 @@ export default function CustomExerciseModal({
                   onClick={() => setMuscleGroup(m.id)}
                   className={`p-2 rounded-xl text-xs font-semibold text-center border transition-all ${
                     muscleGroup === m.id
-                      ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300 shadow-sm'
-                      : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:text-slate-200'
+                      ? 'bg-[#CCFF00] border-[#CCFF00] text-black font-black shadow-sm'
+                      : 'bg-zinc-900/60 border-zinc-800 text-zinc-400 hover:text-zinc-200'
                   }`}
                 >
                   {m.label}
@@ -220,10 +220,10 @@ export default function CustomExerciseModal({
                   type="button"
                   key={eq.id}
                   onClick={() => setEquipment(eq.id)}
-                  className={`p-2 rounded-xl text-xs font-medium text-center border transition-all ${
+                  className={`p-2 rounded-xl text-xs font-semibold text-center border transition-all ${
                     equipment === eq.id
-                      ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300'
-                      : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:text-slate-200'
+                      ? 'bg-[#CCFF00] border-[#CCFF00] text-black font-black shadow-sm'
+                      : 'bg-zinc-900/60 border-zinc-800 text-zinc-400 hover:text-zinc-200'
                   }`}
                 >
                   {eq.label}
@@ -234,32 +234,32 @@ export default function CustomExerciseModal({
 
           {/* Teacher's Cues / Notes */}
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-slate-200 flex items-center justify-between">
+            <label className="text-xs font-bold text-zinc-200 flex items-center justify-between">
               <span>Indicaciones y Técnica del Profe</span>
-              <span className="text-[10px] text-slate-400 font-normal">Consejos de postura o técnica</span>
+              <span className="text-[10px] text-zinc-400 font-normal">Consejos de postura o técnica</span>
             </label>
             <textarea
               rows={3}
               placeholder="Ej: 7 repeticiones parciales abajo, 7 parciales arriba y 7 completas. No balancear la espalda y mantener los codos pegados al cuerpo."
               value={cues}
               onChange={(e) => setCues(e.target.value)}
-              className="w-full p-3 rounded-2xl bg-slate-900/90 border border-slate-700/80 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
+              className="w-full p-3 rounded-2xl bg-zinc-900 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#CCFF00]"
             />
           </div>
 
           {/* VIDEO RECORDING / UPLOAD SECTION */}
-          <div className="p-3.5 rounded-2xl bg-slate-900/80 border border-cyan-500/30 space-y-3">
+          <div className="p-3.5 rounded-2xl bg-zinc-900 border border-zinc-800 space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Video className="w-4 h-4 text-cyan-400" />
+                <Video className="w-4 h-4 text-[#CCFF00]" />
                 <span className="text-xs font-bold text-white">Video Demostrativo del Profe</span>
               </div>
-              <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
+              <div className="flex items-center gap-1 bg-zinc-950 p-1 rounded-xl border border-zinc-800">
                 <button
                   type="button"
                   onClick={() => setVideoMode('upload')}
                   className={`px-2 py-0.5 rounded-lg text-[10px] font-bold transition-all ${
-                    videoMode === 'upload' ? 'bg-cyan-500 text-slate-950' : 'text-slate-400'
+                    videoMode === 'upload' ? 'bg-[#CCFF00] text-black font-black' : 'text-zinc-400'
                   }`}
                 >
                   Grabar / Video
@@ -268,7 +268,7 @@ export default function CustomExerciseModal({
                   type="button"
                   onClick={() => setVideoMode('link')}
                   className={`px-2 py-0.5 rounded-lg text-[10px] font-bold transition-all ${
-                    videoMode === 'link' ? 'bg-cyan-500 text-slate-950' : 'text-slate-400'
+                    videoMode === 'link' ? 'bg-[#CCFF00] text-black font-black' : 'text-zinc-400'
                   }`}
                 >
                   Link URL
@@ -279,7 +279,7 @@ export default function CustomExerciseModal({
             {videoMode === 'upload' && (
               <div className="space-y-2">
                 {previewVideoUrl ? (
-                  <div className="relative rounded-xl overflow-hidden border border-cyan-500/40 bg-black">
+                  <div className="relative rounded-xl overflow-hidden border border-zinc-800 bg-black">
                     <video
                       src={previewVideoUrl}
                       controls
@@ -294,7 +294,7 @@ export default function CustomExerciseModal({
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
-                    <div className="p-2 bg-slate-950/90 text-[10px] text-cyan-300 flex items-center justify-between">
+                    <div className="p-2 bg-zinc-950/90 text-[10px] text-[#CCFF00] flex items-center justify-between font-medium">
                       <span>✓ Video cargado: {selectedFile?.name || 'video_grabado.mp4'}</span>
                       <span>{(selectedFile ? (selectedFile.size / (1024 * 1024)).toFixed(1) : 0)} MB</span>
                     </div>
@@ -305,22 +305,22 @@ export default function CustomExerciseModal({
                     <button
                       type="button"
                       onClick={() => cameraInputRef.current?.click()}
-                      className="p-3.5 rounded-xl border border-dashed border-cyan-500/50 bg-cyan-500/5 hover:bg-cyan-500/10 flex flex-col items-center justify-center gap-1.5 transition-all text-center group"
+                      className="p-3.5 rounded-xl border border-dashed border-zinc-700 bg-zinc-950/60 hover:bg-zinc-900 hover:border-[#CCFF00]/50 flex flex-col items-center justify-center gap-1.5 transition-all text-center group"
                     >
-                      <Camera className="w-5 h-5 text-cyan-400 group-hover:scale-110 transition-transform" />
+                      <Camera className="w-5 h-5 text-[#CCFF00] group-hover:scale-110 transition-transform" />
                       <span className="text-xs font-bold text-white">Grabar con Cámara</span>
-                      <span className="text-[10px] text-slate-400">Abre la cámara del celular</span>
+                      <span className="text-[10px] text-zinc-400">Abre la cámara del celular</span>
                     </button>
 
                     {/* Choose from gallery */}
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
-                      className="p-3.5 rounded-xl border border-dashed border-slate-700 bg-slate-950/60 hover:bg-slate-900 flex flex-col items-center justify-center gap-1.5 transition-all text-center group"
+                      className="p-3.5 rounded-xl border border-dashed border-zinc-700 bg-zinc-950/60 hover:bg-zinc-900 flex flex-col items-center justify-center gap-1.5 transition-all text-center group"
                     >
-                      <Upload className="w-5 h-5 text-slate-300 group-hover:scale-110 transition-transform" />
+                      <Upload className="w-5 h-5 text-zinc-300 group-hover:scale-110 transition-transform" />
                       <span className="text-xs font-bold text-white">Subir de Galería</span>
-                      <span className="text-[10px] text-slate-400">Archivo de video</span>
+                      <span className="text-[10px] text-zinc-400">Archivo de video</span>
                     </button>
 
                     {/* Hidden inputs */}
@@ -341,7 +341,7 @@ export default function CustomExerciseModal({
                     />
                   </div>
                 )}
-                <p className="text-[11px] text-slate-400 leading-tight">
+                <p className="text-[11px] text-zinc-400 leading-tight">
                   💡 Puedes grabarte a ti o pedirle permiso al profe para grabar 5-10 segundos de la técnica exacta. Se guarda en tu dispositivo.
                 </p>
               </div>
@@ -354,9 +354,9 @@ export default function CustomExerciseModal({
                   placeholder="https://www.youtube.com/watch?v=..."
                   value={videoUrl}
                   onChange={(e) => setVideoUrl(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400"
+                  className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#CCFF00]"
                 />
-                <p className="text-[10px] text-slate-400">Pega un enlace de YouTube si encontraste la técnica online.</p>
+                <p className="text-[10px] text-zinc-400">Pega un enlace de YouTube si encontraste la técnica online.</p>
               </div>
             )}
           </div>
@@ -415,17 +415,17 @@ export default function CustomExerciseModal({
             <button
               type="submit"
               disabled={isSaving || !name.trim()}
-              className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-slate-950 font-black text-sm shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+              className="w-full py-4 rounded-2xl bg-[#CCFF00] hover:bg-[#B8E600] text-black font-black text-xs uppercase tracking-wider shadow-lg shadow-[#CCFF00]/15 flex items-center justify-center gap-2 transition-all disabled:opacity-50 active:scale-98"
             >
               {isSaving ? (
                 <>
-                  <Sparkles className="w-4 h-4 animate-spin" />
+                  <Sparkles className="w-4 h-4 animate-spin text-black" />
                   <span>Guardando ejercicio...</span>
                 </>
               ) : (
                 <>
-                  <CheckCircle2 className="w-5 h-5" />
-                  <span>Guardar Ejercicio Personalizado</span>
+                  <CheckCircle2 className="w-4 h-4 text-black stroke-[2.5]" />
+                  <span>Guardar Ejercicio</span>
                 </>
               )}
             </button>

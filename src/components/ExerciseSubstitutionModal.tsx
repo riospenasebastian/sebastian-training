@@ -111,17 +111,17 @@ export default function ExerciseSubstitutionModal({
 
   return (
     <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4">
-      <div className="w-full max-w-lg rounded-t-3xl sm:rounded-3xl bg-[#121622] border border-cyan-500/20 max-h-[85vh] flex flex-col overflow-hidden shadow-2xl">
+      <div className="w-full max-w-lg rounded-t-3xl sm:rounded-3xl bg-[#0E1016] border border-zinc-800 max-h-[85vh] flex flex-col overflow-hidden shadow-2xl">
         {/* Header */}
-        <div className="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/60">
-          <div className="flex items-center gap-2">
-            <RefreshCw className="w-4 h-4 text-cyan-400" />
+        <div className="p-4 border-b border-zinc-800/80 flex items-center justify-between bg-zinc-950/80">
+          <div className="flex items-center gap-2.5">
+            <RefreshCw className="w-4 h-4 text-[#CCFF00]" />
             <div>
-              <h3 className="text-base font-bold text-white">Sustituir Ejercicio</h3>
-              <p className="text-xs text-slate-400">Actual: {currentExercise.name}</p>
+              <h3 className="text-base font-black text-white">Sustituir Ejercicio</h3>
+              <p className="text-xs text-zinc-400 font-medium">Actual: {currentExercise.name}</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-white rounded-lg">
+          <button onClick={onClose} className="p-1.5 text-zinc-400 hover:text-white rounded-lg transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -130,21 +130,21 @@ export default function ExerciseSubstitutionModal({
         <div className="p-4 overflow-y-auto space-y-4 flex-1">
           {/* RESTORE ORIGINAL EXERCISE CARD (If currently substituted) */}
           {originalEx && (
-            <div className="p-3.5 rounded-2xl bg-gradient-to-r from-cyan-950/80 to-slate-900 border border-cyan-500/40 flex items-center justify-between shadow-lg">
+            <div className="p-3.5 rounded-2xl bg-[#CCFF00]/10 border border-[#CCFF00]/30 flex items-center justify-between shadow-lg">
               <div className="flex items-center gap-3 min-w-0">
                 {originalEx.gif_url && (
                   <img
                     src={originalEx.gif_url}
                     alt={originalEx.name}
-                    className="w-12 h-12 rounded-xl object-contain bg-slate-950 p-1 border border-cyan-500/30 shrink-0"
+                    className="w-12 h-12 rounded-xl object-contain bg-black p-1 border border-zinc-800 shrink-0"
                   />
                 )}
                 <div className="min-w-0">
-                  <span className="text-[10px] font-black text-cyan-400 uppercase tracking-wider block">
+                  <span className="text-[10px] font-black text-[#CCFF00] uppercase tracking-wider block">
                     Ejercicio Original de la Rutina
                   </span>
-                  <h4 className="text-xs font-bold text-white truncate">{originalEx.name}</h4>
-                  <span className="text-[10px] text-slate-400">Toca para volver a la rutina base</span>
+                  <h4 className="text-xs font-black text-white truncate">{originalEx.name}</h4>
+                  <span className="text-[10px] text-zinc-400 font-medium">Toca para volver a la rutina base</span>
                 </div>
               </div>
               <button
@@ -152,7 +152,7 @@ export default function ExerciseSubstitutionModal({
                   onSelectAlternative(originalEx.id);
                   onClose();
                 }}
-                className="px-3.5 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black text-xs active:scale-95 transition-all shadow-md shrink-0 ml-2"
+                className="px-3.5 py-2 rounded-xl bg-[#CCFF00] hover:bg-[#B8E600] text-black font-black text-xs active:scale-95 transition-all shadow-md shrink-0 ml-2"
               >
                 Restaurar
               </button>
@@ -162,7 +162,7 @@ export default function ExerciseSubstitutionModal({
           {/* Direct Recommended Alternatives */}
           {directAlts.length > 0 && (
             <div className="space-y-2">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-cyan-400 block">
+              <span className="text-[11px] font-black uppercase tracking-wider text-[#CCFF00] block">
                 Alternativas Directas Recomendadas
               </span>
               {directAlts.map((alt) => {
@@ -175,29 +175,29 @@ export default function ExerciseSubstitutionModal({
                       onSelectAlternative(alt.altId);
                       onClose();
                     }}
-                    className="w-full p-3 rounded-2xl bg-cyan-950/30 border border-cyan-500/30 hover:border-cyan-400 flex items-center justify-between text-left group transition-all"
+                    className="w-full p-3 rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-[#CCFF00]/50 flex items-center justify-between text-left group transition-all"
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       {altEx.gif_url && (
                         <img
                           src={altEx.gif_url}
                           alt={altEx.name}
-                          className="w-12 h-12 rounded-xl object-contain bg-slate-950 p-1 border border-slate-800 shrink-0"
+                          className="w-12 h-12 rounded-xl object-contain bg-black p-1 border border-zinc-800 shrink-0"
                         />
                       )}
                       <div className="min-w-0">
                         <div className="flex items-center gap-1.5 mb-0.5">
-                          <span className="text-xs font-bold text-white group-hover:text-cyan-300 truncate">
+                          <span className="text-xs font-bold text-white group-hover:text-[#CCFF00] truncate transition-colors">
                             {altEx.name}
                           </span>
-                          <span className="px-1.5 py-0.2 rounded text-[9px] font-black bg-cyan-500/20 text-cyan-400 shrink-0">
+                          <span className="px-1.5 py-0.2 rounded text-[9px] font-black bg-[#CCFF00]/15 text-[#CCFF00] shrink-0">
                             Tier {altEx.ranking_tier}
                           </span>
                         </div>
-                        <p className="text-[11px] text-slate-300 leading-snug">{alt.reason}</p>
+                        <p className="text-[11px] text-zinc-300 leading-snug">{alt.reason}</p>
                       </div>
                     </div>
-                    <ArrowRight className="w-4 h-4 text-slate-500 group-hover:text-cyan-400 shrink-0 ml-2" />
+                    <ArrowRight className="w-4 h-4 text-zinc-500 group-hover:text-[#CCFF00] shrink-0 ml-2 transition-colors" />
                   </button>
                 );
               })}
@@ -207,7 +207,7 @@ export default function ExerciseSubstitutionModal({
           {/* Same Movement Pattern Options */}
           {patternAlts.length > 0 && (
             <div className="space-y-2">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 block">
                 Mismo Patrón de Movimiento ({currentExercise.movement_pattern.replace('_', ' ')})
               </span>
               {patternAlts.map((ex) => (
@@ -217,24 +217,24 @@ export default function ExerciseSubstitutionModal({
                     onSelectAlternative(ex.id);
                     onClose();
                   }}
-                  className="w-full p-3 rounded-2xl bg-slate-900 border border-slate-800 hover:border-slate-700 flex items-center justify-between text-left group transition-all"
+                  className="w-full p-3 rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 flex items-center justify-between text-left group transition-all"
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     {ex.gif_url && (
                       <img
                         src={ex.gif_url}
                         alt={ex.name}
-                        className="w-11 h-11 rounded-xl object-contain bg-slate-950 p-1 border border-slate-800 shrink-0"
+                        className="w-11 h-11 rounded-xl object-contain bg-black p-1 border border-zinc-800 shrink-0"
                       />
                     )}
                     <div className="min-w-0">
-                      <h4 className="text-xs font-bold text-white group-hover:text-cyan-300 truncate">{ex.name}</h4>
-                      <p className="text-[10px] text-slate-400">
+                      <h4 className="text-xs font-bold text-white group-hover:text-[#CCFF00] truncate transition-colors">{ex.name}</h4>
+                      <p className="text-[10px] text-zinc-400">
                         {ex.difficulty} • {ex.equipment_id}
                       </p>
                     </div>
                   </div>
-                  <ArrowRight className="w-4 h-4 text-slate-600 group-hover:text-white shrink-0 ml-2" />
+                  <ArrowRight className="w-4 h-4 text-zinc-600 group-hover:text-white shrink-0 ml-2" />
                 </button>
               ))}
             </div>
@@ -243,7 +243,7 @@ export default function ExerciseSubstitutionModal({
           {/* Same Muscle Group Options */}
           {sameMuscleAlts.length > 0 && (
             <div className="space-y-2">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 block">
                 Otras Opciones para {currentExercise.primary_muscle_group}
               </span>
               {sameMuscleAlts.map((ex) => (
@@ -253,13 +253,13 @@ export default function ExerciseSubstitutionModal({
                     onSelectAlternative(ex.id);
                     onClose();
                   }}
-                  className="w-full p-2.5 rounded-xl bg-slate-900/60 border border-slate-800/80 hover:border-slate-700 flex items-center justify-between text-left group transition-all"
+                  className="w-full p-2.5 rounded-xl bg-zinc-900/60 border border-zinc-800/80 hover:border-zinc-700 flex items-center justify-between text-left group transition-all"
                 >
                   <div className="min-w-0">
-                    <h4 className="text-xs font-semibold text-slate-300 group-hover:text-white truncate">{ex.name}</h4>
-                    <p className="text-[10px] text-slate-500 capitalize">{ex.movement_pattern.replace('_', ' ')}</p>
+                    <h4 className="text-xs font-semibold text-zinc-300 group-hover:text-white truncate">{ex.name}</h4>
+                    <p className="text-[10px] text-zinc-500 capitalize">{ex.movement_pattern.replace('_', ' ')}</p>
                   </div>
-                  <ArrowRight className="w-3.5 h-3.5 text-slate-600 group-hover:text-white shrink-0 ml-2" />
+                  <ArrowRight className="w-3.5 h-3.5 text-zinc-600 group-hover:text-white shrink-0 ml-2" />
                 </button>
               ))}
             </div>
@@ -267,11 +267,11 @@ export default function ExerciseSubstitutionModal({
 
           {/* Empty State when no alternatives match the muscle group */}
           {directAlts.length === 0 && patternAlts.length === 0 && sameMuscleAlts.length === 0 && (
-            <div className="py-8 px-4 text-center rounded-2xl bg-slate-900/60 border border-slate-800 space-y-2">
-              <p className="text-xs text-cyan-300 font-bold">
+            <div className="py-8 px-4 text-center rounded-2xl bg-zinc-900/60 border border-zinc-800 space-y-2">
+              <p className="text-xs text-[#CCFF00] font-bold">
                 No hay más ejercicios alternativos para {currentExercise.name} en esta sesión.
               </p>
-              <p className="text-[11px] text-slate-400 max-w-xs mx-auto leading-relaxed">
+              <p className="text-[11px] text-zinc-400 max-w-xs mx-auto leading-relaxed">
                 Hemos filtrado los demás ejercicios (piernas, pecho, etc.) para que tu entrenamiento trabaje exactamente el músculo correspondiente sin desequilibrar la rutina.
               </p>
             </div>
@@ -279,10 +279,10 @@ export default function ExerciseSubstitutionModal({
         </div>
 
         {/* Footer */}
-        <div className="p-3 border-t border-slate-800 bg-slate-900/80 text-center">
+        <div className="p-3 border-t border-zinc-800 bg-zinc-950/80 text-center">
           <button
             onClick={onClose}
-            className="text-xs text-slate-400 hover:text-white font-medium"
+            className="text-xs text-zinc-400 hover:text-white font-medium transition-colors"
           >
             Cancelar y mantener ejercicio actual
           </button>

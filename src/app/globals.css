@@ -21,20 +21,20 @@
   }
 }
 
-/* Glassmorphism card surfaces */
+/* Glassmorphism card surfaces - Symmetry Stealth Carbon */
 .glass-panel {
-  background: rgba(18, 22, 34, 0.75);
+  background: rgba(18, 19, 24, 0.85);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.07);
 }
 
 .glass-panel-elevated {
-  background: rgba(26, 32, 50, 0.85);
+  background: rgba(22, 24, 30, 0.92);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(56, 189, 248, 0.2);
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5), 0 0 20px -5px rgba(6, 182, 212, 0.15);
+  border: 1px solid rgba(204, 255, 0, 0.25);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6), 0 0 20px -5px rgba(204, 255, 0, 0.12);
 }
 
 /* Safe area padding utilities for iPhone 16 Pro Max / Dynamic Island / Home Bar */

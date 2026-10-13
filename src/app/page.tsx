@@ -224,7 +224,7 @@ export default function App() {
   const latestMeasurement = measurements[0] || null;
 
   return (
-    <main className="min-h-screen bg-[#090A0F] text-slate-100 flex flex-col justify-between selection:bg-cyan-500 selection:text-white">
+    <main className="min-h-screen bg-[#08090C] text-slate-100 flex flex-col justify-between selection:bg-[#CCFF00] selection:text-black">
       {/* View Router */}
       <div className="flex-1">
         {currentTab === 'home' && (
@@ -249,6 +249,7 @@ export default function App() {
             onNavigateTab={setCurrentTab}
             onOpenCreateRoutine={() => setRoutineEditor({ isOpen: true, template: null })}
             onOpenEditRoutine={(tpl) => setRoutineEditor({ isOpen: true, template: tpl })}
+            onDeleteRoutine={handleDeleteCustomTemplate}
             onOpenCreateExercise={() => setIsCustomExModalOpen(true)}
           />
         )}
@@ -266,19 +267,20 @@ export default function App() {
               beginnerMode={profile.beginner_mode}
               savedState={activeWorkout.savedState}
               onSaveState={handleSaveActiveWorkoutState}
+              onDeleteExercise={handleDeleteCustomExercise}
             />
           ) : (
             <div className="p-8 text-center flex flex-col items-center justify-center min-h-[60vh] max-w-sm mx-auto space-y-4 pt-safe">
-              <div className="w-16 h-16 rounded-full bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+              <div className="w-16 h-16 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-[#CCFF00] shadow-lg shadow-[#CCFF00]/10">
                 <span className="text-2xl">🏋️</span>
               </div>
-              <h2 className="text-xl font-bold text-white">No hay entrenamiento en curso</h2>
-              <p className="text-xs text-slate-400">
+              <h2 className="text-xl font-black text-white">No hay entrenamiento en curso</h2>
+              <p className="text-xs text-zinc-400">
                 Ve a Inicio y pulsa "EMPEZAR ENTRENAMIENTO" para iniciar la siguiente rutina de tu ciclo.
               </p>
               <button
                 onClick={() => setCurrentTab('home')}
-                className="py-3 px-6 rounded-2xl bg-cyan-500 text-slate-950 font-bold text-xs shadow-md"
+                className="py-3.5 px-6 rounded-2xl bg-[#CCFF00] hover:bg-[#B8E600] text-black font-black text-xs uppercase tracking-wider shadow-lg shadow-[#CCFF00]/15 active:scale-95 transition-all"
               >
                 Ir a Inicio
               </button>
@@ -337,6 +339,7 @@ export default function App() {
         isOpen={routineEditor.isOpen}
         onClose={() => setRoutineEditor({ isOpen: false, template: null })}
         onSaveRoutine={handleSaveCustomTemplate}
+        onDeleteRoutine={handleDeleteCustomTemplate}
         initialTemplate={routineEditor.template}
         allExercises={exercises}
         onAddNewCustomExercise={handleSaveCustomExercise}

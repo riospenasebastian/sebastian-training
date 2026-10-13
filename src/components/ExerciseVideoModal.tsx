@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Exercise } from '../lib/types';
-import { X, ExternalLink, Sparkles, AlertCircle, HeartHandshake, Info, Play, Film, Layers, Video } from 'lucide-react';
+import { X, ExternalLink, Sparkles, AlertCircle, HeartHandshake, Info, Play, Film, Layers, Video, Trash2 } from 'lucide-react';
 import MuscleMap from './MuscleMap';
 import { getVisualStepsForExercise } from '../lib/exercise-steps';
 import { getVideoObjectUrl } from '../lib/media-storage';
@@ -12,6 +12,7 @@ interface ExerciseVideoModalProps {
   isOpen: boolean;
   onClose: () => void;
   beginnerMode?: boolean;
+  onDeleteExercise?: (exerciseId: string) => void;
 }
 
 export default function ExerciseVideoModal({
@@ -19,6 +20,7 @@ export default function ExerciseVideoModal({
   isOpen,
   onClose,
   beginnerMode = true,
+  onDeleteExercise,
 }: ExerciseVideoModalProps) {
   const [activeMediaTab, setActiveMediaTab] = useState<'gif' | 'video' | 'muscle' | 'local_video'>(
     exercise.video_storage_key ? 'local_video' : exercise.gif_url ? 'gif' : 'video'
@@ -56,35 +58,35 @@ export default function ExerciseVideoModal({
 
   return (
     <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4">
-      <div className="w-full max-w-lg rounded-t-3xl sm:rounded-3xl bg-[#121622] border border-cyan-500/20 max-h-[92vh] flex flex-col overflow-hidden shadow-2xl">
+      <div className="w-full max-w-lg rounded-t-3xl sm:rounded-3xl bg-[#0E1016] border border-zinc-800 max-h-[92vh] flex flex-col overflow-hidden shadow-2xl">
         {/* Header */}
-        <div className="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/60">
+        <div className="p-4 border-b border-zinc-800/80 flex items-center justify-between bg-zinc-950/80">
           <div>
             <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded text-[10px] font-black bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+              <span className="px-2 py-0.5 rounded text-[10px] font-black bg-[#CCFF00]/15 text-[#CCFF00] border border-[#CCFF00]/30">
                 {exercise.is_custom ? 'Personalizado' : `Tier ${exercise.ranking_tier}`}
               </span>
-              <h3 className="text-base font-bold text-white">{exercise.name}</h3>
+              <h3 className="text-base font-black text-white">{exercise.name}</h3>
             </div>
-            <p className="text-xs text-slate-400 capitalize">{exercise.movement_pattern?.replace('_', ' ') || exercise.primary_muscle_group}</p>
+            <p className="text-xs text-zinc-400 font-medium capitalize mt-0.5">{exercise.movement_pattern?.replace('_', ' ') || exercise.primary_muscle_group}</p>
           </div>
-          <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-white rounded-lg">
+          <button onClick={onClose} className="p-1.5 text-zinc-400 hover:text-white rounded-lg transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Media Switcher Tabs */}
-        <div className={`grid ${localVideoUrl ? 'grid-cols-4' : 'grid-cols-3'} border-b border-slate-800 text-xs font-semibold bg-slate-950`}>
+        <div className={`grid ${localVideoUrl ? 'grid-cols-4' : 'grid-cols-3'} border-b border-zinc-800 text-xs font-bold bg-zinc-950`}>
           {localVideoUrl && (
             <button
               onClick={() => setActiveMediaTab('local_video')}
               className={`py-2.5 flex items-center justify-center gap-1.5 border-b-2 transition-all ${
                 activeMediaTab === 'local_video'
-                  ? 'border-cyan-400 text-cyan-400 bg-cyan-500/10'
-                  : 'border-transparent text-slate-400 hover:text-white'
+                  ? 'border-[#CCFF00] text-[#CCFF00] bg-[#CCFF00]/10'
+                  : 'border-transparent text-zinc-400 hover:text-white'
               }`}
             >
-              <Video className="w-4 h-4 text-cyan-400 animate-pulse" />
+              <Video className="w-4 h-4 text-[#CCFF00] animate-pulse" />
               <span>Video Profe</span>
             </button>
           )}
@@ -93,8 +95,8 @@ export default function ExerciseVideoModal({
             onClick={() => setActiveMediaTab('gif')}
             className={`py-2.5 flex items-center justify-center gap-1.5 border-b-2 transition-all ${
               activeMediaTab === 'gif'
-                ? 'border-cyan-400 text-cyan-400 bg-cyan-500/10'
-                : 'border-transparent text-slate-400 hover:text-white'
+                ? 'border-[#CCFF00] text-[#CCFF00] bg-[#CCFF00]/10'
+                : 'border-transparent text-zinc-400 hover:text-white'
             }`}
           >
             <Film className="w-4 h-4" />
@@ -105,8 +107,8 @@ export default function ExerciseVideoModal({
             onClick={() => setActiveMediaTab('video')}
             className={`py-2.5 flex items-center justify-center gap-1.5 border-b-2 transition-all ${
               activeMediaTab === 'video'
-                ? 'border-cyan-400 text-cyan-400 bg-cyan-500/10'
-                : 'border-transparent text-slate-400 hover:text-white'
+                ? 'border-[#CCFF00] text-[#CCFF00] bg-[#CCFF00]/10'
+                : 'border-transparent text-zinc-400 hover:text-white'
             }`}
           >
             <Play className="w-4 h-4" />
@@ -117,8 +119,8 @@ export default function ExerciseVideoModal({
             onClick={() => setActiveMediaTab('muscle')}
             className={`py-2.5 flex items-center justify-center gap-1.5 border-b-2 transition-all ${
               activeMediaTab === 'muscle'
-                ? 'border-cyan-400 text-cyan-400 bg-cyan-500/10'
-                : 'border-transparent text-slate-400 hover:text-white'
+                ? 'border-[#CCFF00] text-[#CCFF00] bg-[#CCFF00]/10'
+                : 'border-transparent text-zinc-400 hover:text-white'
             }`}
           >
             <Layers className="w-4 h-4" />
@@ -131,7 +133,7 @@ export default function ExerciseVideoModal({
           {/* LOCAL RECORDED VIDEO */}
           {activeMediaTab === 'local_video' && localVideoUrl && (
             <div className="space-y-3">
-              <div className="w-full rounded-2xl overflow-hidden bg-black border border-cyan-500/30 relative shadow-xl">
+              <div className="w-full rounded-2xl overflow-hidden bg-black border border-zinc-800 relative shadow-xl">
                 <video
                   src={localVideoUrl}
                   controls
@@ -143,12 +145,12 @@ export default function ExerciseVideoModal({
               </div>
 
               {exercise.cues && (
-                <div className="p-3.5 rounded-2xl bg-cyan-950/40 border border-cyan-500/30 space-y-1">
-                  <span className="text-xs font-bold text-cyan-300 flex items-center gap-1.5">
-                    <Sparkles className="w-4 h-4 text-cyan-400" />
+                <div className="p-3.5 rounded-2xl bg-zinc-900 border border-zinc-800 space-y-1">
+                  <span className="text-xs font-bold text-[#CCFF00] flex items-center gap-1.5">
+                    <Sparkles className="w-4 h-4 text-[#CCFF00]" />
                     <span>Indicaciones Clave del Profesor:</span>
                   </span>
-                  <p className="text-xs text-slate-200 leading-relaxed font-medium">
+                  <p className="text-xs text-zinc-200 leading-relaxed font-medium">
                     {exercise.cues}
                   </p>
                 </div>
@@ -159,20 +161,20 @@ export default function ExerciseVideoModal({
           {activeMediaTab === 'gif' && (
             <div className="flex flex-col items-center space-y-4">
               {exercise.gif_url ? (
-                <div className="w-full max-w-[320px] aspect-square rounded-2xl overflow-hidden bg-slate-950 border border-cyan-500/30 shadow-xl relative flex items-center justify-center">
+                <div className="w-full max-w-[320px] aspect-square rounded-2xl overflow-hidden bg-black border border-zinc-800 shadow-xl relative flex items-center justify-center">
                   <img
                     src={exercise.gif_url}
                     alt={exercise.name}
                     className="w-full h-full object-contain p-2"
                     loading="eager"
                   />
-                  <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-black/80 backdrop-blur-sm border border-cyan-500/40 text-[9px] font-bold text-cyan-300 flex items-center gap-1">
-                    <Film className="w-2.5 h-2.5 text-cyan-400 animate-pulse" />
+                  <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-black/85 backdrop-blur-sm border border-[#CCFF00]/40 text-[9px] font-bold text-[#CCFF00] flex items-center gap-1">
+                    <Film className="w-2.5 h-2.5 text-[#CCFF00] animate-pulse" />
                     <span>Loop continuo</span>
                   </div>
                 </div>
               ) : (
-                <div className="w-full aspect-video rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400 text-xs">
+                <div className="w-full aspect-video rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-400 text-xs">
                   Animación próximamente disponible
                 </div>
               )}
@@ -190,16 +192,16 @@ export default function ExerciseVideoModal({
                   }).map((step) => (
                     <div
                       key={step.step}
-                      className="p-3 rounded-xl bg-slate-900/90 border border-slate-800 flex items-start gap-2.5 shadow-sm"
+                      className="p-3 rounded-xl bg-zinc-900/90 border border-zinc-800 flex items-start gap-2.5 shadow-sm"
                     >
-                      <span className="w-6 h-6 rounded-full bg-cyan-500/20 border border-cyan-500/40 text-cyan-400 font-black text-xs flex items-center justify-center shrink-0 mt-0.5">
+                      <span className="w-6 h-6 rounded-full bg-[#CCFF00]/15 border border-[#CCFF00]/35 text-[#CCFF00] font-black text-xs flex items-center justify-center shrink-0 mt-0.5">
                         {step.step}
                       </span>
                       <div className="flex-1 min-w-0">
                         <h5 className="text-xs font-bold text-white leading-tight">
                           {step.title}
                         </h5>
-                        <p className="text-xs text-slate-300 leading-snug mt-0.5">
+                        <p className="text-xs text-zinc-300 leading-snug mt-0.5">
                           {step.instruction}
                         </p>
                       </div>
@@ -213,7 +215,7 @@ export default function ExerciseVideoModal({
           {activeMediaTab === 'video' && (
             <div className="space-y-3">
               {embedUrl ? (
-                <div className="w-full aspect-video rounded-2xl overflow-hidden bg-black border border-slate-800 relative shadow-lg">
+                <div className="w-full aspect-video rounded-2xl overflow-hidden bg-black border border-zinc-800 relative shadow-lg">
                   <iframe
                     src={embedUrl}
                     title={exercise.name}
@@ -229,21 +231,21 @@ export default function ExerciseVideoModal({
                   href={exercise.video_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-3.5 rounded-2xl bg-cyan-950/40 border border-cyan-500/30 flex items-center justify-between group hover:bg-cyan-900/40 transition-all text-xs text-cyan-300 font-semibold"
+                  className="p-3.5 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-between group hover:border-[#CCFF00]/40 transition-all text-xs text-zinc-200 font-semibold"
                 >
                   <div className="flex items-center gap-2">
                     <Play className="w-4 h-4 text-red-500 fill-red-500" />
-                    <span>Abrir guía completa de Jeff Nippard en la app de YouTube</span>
+                    <span>Abrir guía completa en YouTube</span>
                   </div>
-                  <ExternalLink className="w-4 h-4 text-cyan-400 group-hover:translate-x-0.5 transition-transform" />
+                  <ExternalLink className="w-4 h-4 text-[#CCFF00] group-hover:translate-x-0.5 transition-transform" />
                 </a>
               )}
             </div>
           )}
 
           {activeMediaTab === 'muscle' && (
-            <div className="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800">
-              <span className="text-xs font-bold text-slate-300 block mb-2 text-center">
+            <div className="p-3.5 rounded-2xl bg-zinc-900/60 border border-zinc-800">
+              <span className="text-xs font-bold text-zinc-300 block mb-2 text-center">
                 Músculos Primarios y Secundarios
               </span>
               <MuscleMap
@@ -257,30 +259,30 @@ export default function ExerciseVideoModal({
 
           {/* Beginner Mode Helper */}
           {beginnerMode && (
-            <div className="p-4 rounded-2xl bg-emerald-950/30 border border-emerald-500/30 space-y-1.5">
+            <div className="p-4 rounded-2xl bg-emerald-950/20 border border-emerald-500/25 space-y-1.5">
               <div className="flex items-center gap-1.5 text-emerald-400 font-bold text-xs">
                 <Sparkles className="w-4 h-4" />
                 <span>Modo Principiante: Instrucciones en lenguaje claro</span>
               </div>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                <strong>¿Qué hacer?</strong> {exercise.instructions}
+              <p className="text-xs text-zinc-300 leading-relaxed">
+                <strong className="text-white">¿Qué hacer?</strong> {exercise.instructions}
               </p>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                <strong>¿Dónde debo sentirlo?</strong> {exercise.how_it_should_feel}
+              <p className="text-xs text-zinc-300 leading-relaxed">
+                <strong className="text-white">¿Dónde debo sentirlo?</strong> {exercise.how_it_should_feel}
               </p>
             </div>
           )}
 
           {/* Setup & Execution */}
           <div className="space-y-2">
-            <div className="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800">
-              <h4 className="text-xs font-bold text-cyan-400 mb-1">Posición Inicial & Ajuste</h4>
-              <p className="text-xs text-slate-300 leading-relaxed">{exercise.setup}</p>
+            <div className="p-3.5 rounded-xl bg-zinc-900/70 border border-zinc-800">
+              <h4 className="text-xs font-bold text-[#CCFF00] mb-1">Posición Inicial & Ajuste</h4>
+              <p className="text-xs text-zinc-300 leading-relaxed">{exercise.setup}</p>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800">
-              <h4 className="text-xs font-bold text-cyan-400 mb-1">Ejecución Paso a Paso</h4>
-              <p className="text-xs text-slate-300 leading-relaxed">{exercise.execution}</p>
+            <div className="p-3.5 rounded-xl bg-zinc-900/70 border border-zinc-800">
+              <h4 className="text-xs font-bold text-[#CCFF00] mb-1">Ejecución Paso a Paso</h4>
+              <p className="text-xs text-zinc-300 leading-relaxed">{exercise.execution}</p>
             </div>
           </div>
 
@@ -316,10 +318,26 @@ export default function ExerciseVideoModal({
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-slate-800 bg-slate-900/80">
+        <div className="p-4 border-t border-zinc-800 bg-[#0C0D11]/90 space-y-2">
+          {exercise.is_custom && onDeleteExercise && (
+            <button
+              type="button"
+              onClick={() => {
+                if (confirm(`¿Eliminar el ejercicio personalizado "${exercise.name}"?`)) {
+                  onDeleteExercise(exercise.id);
+                  onClose();
+                }
+              }}
+              className="w-full py-2.5 rounded-xl border border-red-500/40 text-red-400 hover:bg-red-500/10 font-bold text-xs flex items-center justify-center gap-1.5 transition-all"
+            >
+              <Trash2 className="w-4 h-4" />
+              <span>Eliminar este Ejercicio Personalizado</span>
+            </button>
+          )}
+
           <button
             onClick={onClose}
-            className="w-full py-3 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-sm shadow-md transition-all active:scale-98"
+            className="w-full py-3 rounded-2xl bg-[#CCFF00] hover:bg-[#B8E600] text-black font-black text-xs uppercase tracking-wider shadow-lg shadow-[#CCFF00]/15 transition-all active:scale-98"
           >
             Entendido, volver a la rutina
           </button>
